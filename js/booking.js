@@ -50,8 +50,9 @@ function initBookingForm() {
     if (error) console.error('booking', error);
 
     // 2) WhatsApp
-    const wa = (window.content.contact?.phone_wa) || '2250798386599';
-    window.open(`https://wa.me/${wa}?text=${buildWhatsAppMessage(data)}`, '_blank');
+   // ✅ Utilise TOUJOURS le numéro dédié aux réservations (celui de l'admin)
+   const wa = SITE_CONFIG.whatsappNumber;
+   window.open(`https://wa.me/${wa}?text=${buildWhatsAppMessage(data)}`, '_blank');
 
     const success = document.getElementById('bk-success');
     success.classList.remove('hidden');
