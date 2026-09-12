@@ -1,20 +1,28 @@
 /* ============================================
-   GALLERY — Supabase + lightbox
+   GALLERY — Supabase + Lightbox + Voir plus
    ============================================ */
+window.allMedia = [];
 let currentFilter = 'all';
 let currentMedia = [];
 let currentIndex = 0;
-let allMedia = [];
+
+/* Nombre d'items visibles au départ */
+const INITIAL_COUNT_MOBILE  = 4;   // < 640px
+const INITIAL_COUNT_DESKTOP = 6;   // ≥ 640px
+
+let isExpanded = false;
+
+function getInitialCount() {
+  return window.innerWidth < 640 ? INITIAL_COUNT_MOBILE : INITIAL_COUNT_DESKTOP;
+}
 
 async function loadGallery() {
   const { data, error } = await supabaseClient
-    .from('media')
-    .select('*')
+    .from('media').select('*')
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
-
   if (error) { console.error('loadGallery', error); return; }
-  allMedia = data || [];
+  window.allMedia = data || [];
   renderGallery();
 }
 
@@ -22,37 +30,46 @@ function renderGallery() {
   const grid    = document.getElementById('galleryGrid');
   const filters = document.getElementById('galleryFilters');
   const empty   = document.getElementById('galleryEmpty');
+  const moreWrap = document.getElementById('galleryMoreWrap');
+  const moreBtn = document.getElementById('galleryMoreBtn');
   if (!grid || !filters) return;
 
-  // Tags uniques
-  const tags = ['all', ...new Set(allMedia.map(m => m.tag).filter(Boolean))];
+  /* ---------- Filtres ---------- */
+  const tags = ['all', ...new Set(window.allMedia.map(m => m.tag).filter(Boolean))];
   filters.innerHTML = tags.map(tag => `
     <button class="filter-btn ${tag === currentFilter ? 'active' : ''}" data-tag="${tag}">
-      ${tag === 'all'
-        ? translations[currentLang].gallery.all
-        : tag.charAt(0).toUpperCase() + tag.slice(1)}
+      ${tag === 'all' ? t('gallery.all') : tag.charAt(0).toUpperCase() + tag.slice(1)}
     </button>
   `).join('');
 
   filters.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentFilter = btn.dataset.tag;
+      isExpanded = false; // reset l'expansion quand on change de filtre
       renderGallery();
     });
   });
 
+  /* ---------- Sélection ---------- */
   currentMedia = currentFilter === 'all'
-    ? allMedia
-    : allMedia.filter(m => m.tag === currentFilter);
+    ? window.allMedia
+    : window.allMedia.filter(m => m.tag === currentFilter);
 
   if (currentMedia.length === 0) {
     grid.innerHTML = '';
     empty.classList.remove('hidden');
+    moreWrap.classList.add('hidden');
     return;
   }
   empty.classList.add('hidden');
 
-  grid.innerHTML = currentMedia.map((item, i) => {
+  /* ---------- Affichage limité ---------- */
+  const initialCount = getInitialCount();
+  const hasMore = currentMedia.length > initialCount;
+  const visibleMedia = isExpanded ? currentMedia : currentMedia.slice(0, initialCount);
+
+  /* ---------- Rendu des items ---------- */
+  grid.innerHTML = visibleMedia.map((item, i) => {
     if (item.type === 'image') {
       return `
         <div class="gallery-item" data-index="${i}">
@@ -60,7 +77,6 @@ function renderGallery() {
           <span class="gallery-caption">${item.caption || ''}</span>
         </div>`;
     }
-    // Video
     return `
       <div class="gallery-item" data-index="${i}">
         <video src="${item.url}" muted loop playsinline preload="metadata"></video>
@@ -77,8 +93,31 @@ function renderGallery() {
   grid.querySelectorAll('.gallery-item').forEach(el => {
     el.addEventListener('click', () => openLightbox(parseInt(el.dataset.index, 10)));
   });
+
+  /* ---------- Bouton Voir plus / Voir moins ---------- */
+  if (hasMore || isExpanded) {
+    moreWrap.classList.remove('hidden');
+    moreBtn.querySelector('span').textContent = isExpanded
+      ? t('gallery.seeLess')
+      : t('gallery.seeMore');
+  } else {
+    moreWrap.classList.add('hidden');
+  }
+
+  /* ---------- Attache l'écouteur une seule fois ---------- */
+  if (!moreBtn.dataset.bound) {
+    moreBtn.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+      renderGallery();
+      if (!isExpanded) {
+        document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    moreBtn.dataset.bound = 'true';
+  }
 }
 
+/* ---------- LIGHTBOX (inchangé) ---------- */
 function openLightbox(index) {
   currentIndex = index;
   const lb = document.getElementById('lightbox');
@@ -117,11 +156,20 @@ function initLightbox() {
   document.addEventListener('keydown', (e) => {
     if (!document.getElementById('lightbox').classList.contains('open')) return;
     if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft')  navigateLightbox(-1);
+    if (e.key === 'ArrowLeft') navigateLightbox(-1);
     if (e.key === 'ArrowRight') navigateLightbox(1);
   });
 
   document.getElementById('lightbox').addEventListener('click', (e) => {
     if (e.target.id === 'lightbox') closeLightbox();
+  });
+
+  /* Re-render quand on redimensionne la fenêtre (mobile → desktop) */
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (!isExpanded) renderGallery();
+    }, 250);
   });
 }
