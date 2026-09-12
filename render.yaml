@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: beauty-by-asty
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: ./
+    routes:
+      - type: rewrite
+        source: /admin
+        destination: /admin.html
+      - type: rewrite
+        source: /admin/
+        destination: /admin.html
