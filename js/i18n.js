@@ -4,7 +4,14 @@
 const translations = {
   fr: {
     nav: { about: "À propos", services: "Services", gallery: "Galerie", reviews: "Avis", faq: "FAQ", booking: "Réservation", contact: "Contact", cta: "Réserver" },
-    gallery: { tag: "Galerie", title: "Portfolio", empty: "La galerie arrive bientôt.", all: "Tout" },
+    gallery: {
+     tag: "Galerie",
+     title: "Portfolio",
+     empty: "La galerie arrive bientôt.",
+     all: "Tout",
+     seeMore: "Voir plus",
+     seeLess: "Voir moins"
+   },
     reviews: {
       tag: "Avis", title: "Ce que disent nos clientes",
       empty: "Soyez la première à laisser un avis.",
@@ -30,8 +37,15 @@ const translations = {
   },
   en: {
     nav: { about: "About", services: "Services", gallery: "Gallery", reviews: "Reviews", faq: "FAQ", booking: "Booking", contact: "Contact", cta: "Book" },
-    gallery: { tag: "Gallery", title: "Portfolio", empty: "The gallery is coming soon.", all: "All" },
-    reviews: {
+   gallery: {
+     tag: "Gallery",
+     title: "Portfolio",
+     empty: "The gallery is coming soon.",
+     all: "All",
+     seeMore: "See more",
+     seeLess: "See less"
+   },   
+      reviews: {
       tag: "Reviews", title: "What our clients say",
       empty: "Be the first to leave a review.",
       formTitle: "Leave your review",
