@@ -4,6 +4,8 @@
 html { scroll-behavior: smooth; }
 body { font-weight: 300; letter-spacing: 0.01em; overflow-x: hidden; }
 
+
+
 /* ---------- NAVBAR ---------- */
 #navbar { background: transparent; color: #FAF7F2; }
 #navbar.scrolled {
@@ -20,6 +22,95 @@ body { font-weight: 300; letter-spacing: 0.01em; overflow-x: hidden; }
 }
 .nav-link:hover::after { width: 100%; }
 .nav-link:hover { color: #B8895A; }
+
+/* ============================================
+   BRAND SWITCHER — Navigation entre les pôles
+   ============================================ */
+.brand-switcher {
+  background: #1C1410;
+  color: #FAF7F2;
+  border-bottom: 1px solid rgba(184, 137, 90, 0.2);
+  position: relative;
+  z-index: 60;
+}
+
+.brand-switcher-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+}
+
+@media (min-width: 768px) {
+  .brand-switcher-inner {
+    justify-content: flex-end;
+    padding: 12px 40px;
+    gap: 16px;
+  }
+}
+
+.switcher-link {
+  opacity: 0.55;
+  transition: opacity 0.3s ease, color 0.3s ease;
+  color: #FAF7F2;
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  white-space: nowrap;
+}
+
+.switcher-link:hover {
+  opacity: 1;
+  color: #B8895A;
+}
+
+.switcher-dot {
+  opacity: 0.3;
+  user-select: none;
+}
+
+/* Le lien actif est défini par data-brand sur <body> */
+body[data-brand="group"]  .switcher-link[data-switch="group"],
+body[data-brand="beauty"] .switcher-link[data-switch="beauty"],
+body[data-brand="deco"]   .switcher-link[data-switch="deco"],
+body[data-brand="studio"] .switcher-link[data-switch="studio"] {
+  opacity: 1;
+  color: #B8895A;
+}
+
+body[data-brand="group"]  .switcher-link[data-switch="group"]::after,
+body[data-brand="beauty"] .switcher-link[data-switch="beauty"]::after,
+body[data-brand="deco"]   .switcher-link[data-switch="deco"]::after,
+body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: #B8895A;
+}
+
+/* Mobile : le switcher devient scrollable horizontalement */
+@media (max-width: 640px) {
+  .brand-switcher-inner {
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    padding: 10px 16px;
+    gap: 8px;
+  }
+  .brand-switcher-inner::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 /* ---------- LANG ---------- */
 .lang-btn { color: currentColor; opacity: 0.5; transition: opacity 0.3s, color 0.3s; letter-spacing: 0.15em; }
