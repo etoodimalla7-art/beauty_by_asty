@@ -1,16 +1,30 @@
 /* ============================================
-   ADMIN — Multi-pôles
+   ADMIN — Contrôle total multi-pôles
    ============================================ */
 let session = null;
 let currentBrand = 'group';
 let currentTab = 'content';
 let currentReviewFilter = 'pending';
 
-let contentData = {};       // contenu du pôle courant
-let allReviewsAdmin = [];   // avis du pôle courant
-let allMediaAdmin = [];     // médias du pôle courant
-let allBookingsAdmin = [];  // réservations du pôle courant
-let allFaqAdmin = [];       // faq du pôle courant
+let contentData = {};
+let allReviewsAdmin = [];
+let allMediaAdmin = [];
+let allBookingsAdmin = [];
+let allFaqAdmin = [];
+
+/* Champs connus : utilisés pour ordonner et décrire l'affichage */
+const KNOWN_FIELDS = {
+  hero:  ['bg_url','location_label','title_fr','title_en','subtitle_fr','subtitle_en','cta1_fr','cta1_en','cta2_fr','cta2_en'],
+  about: ['image_url','tag_fr','tag_en','title_fr','title_en','body1_fr','body1_en','body2_fr','body2_en'],
+  contact: ['tag_fr','tag_en','title_fr','title_en','address','phone','phone_wa','email','hours','map_embed'],
+  socials: ['instagram','facebook','tiktok'],
+  footer: ['tagline_fr','tagline_en','made_fr','made_en'],
+  group_hero: ['bg_url','eyebrow_fr','eyebrow_en','title_fr','title_en','subtitle_fr','subtitle_en','cta1_fr','cta1_en','cta2_fr','cta2_en'],
+  group_about: ['image_url','tag_fr','tag_en','title_fr','title_en','body1_fr','body1_en','body2_fr','body2_en'],
+  group_founder: ['photo_url','tag_fr','tag_en','name','title_fr','title_en','quote_fr','quote_en','bio_fr','bio_en'],
+  group_contact: ['tag_fr','tag_en','title_fr','title_en','address','phone','phone_wa','email','map_embed'],
+  group_footer: ['tagline_fr','tagline_en','made_fr','made_en'],
+};
 
 /* ============================
    AUTH
@@ -19,10 +33,7 @@ async function checkSession() {
   const { data } = await supabaseClient.auth.getSession();
   session = data?.session || null;
   toggleLoginUI();
-  supabaseClient.auth.onAuthStateChange((_e, s) => {
-    session = s;
-    toggleLoginUI();
-  });
+  supabaseClient.auth.onAuthStateChange((_e, s) => { session = s; toggleLoginUI(); });
 }
 
 function toggleLoginUI() {
@@ -31,6 +42,7 @@ function toggleLoginUI() {
   if (session) {
     login.classList.add('hidden');
     panel.classList.remove('hidden');
+    document.getElementById('currentEmail').value = session.user.email || '';
     loadEverything();
   } else {
     login.classList.remove('hidden');
@@ -54,7 +66,6 @@ function initLogin() {
     const password = document.getElementById('login-pass').value;
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
     btn.disabled = false; btnText.textContent = 'Se connecter';
 
     if (error) {
@@ -75,10 +86,46 @@ function initLogin() {
 }
 
 /* ============================
+   ACCOUNT MODAL
+   ============================ */
+function initAccountModal() {
+  const modal = document.getElementById('accountModal');
+  const open = () => { modal.classList.remove('hidden'); modal.classList.add('flex'); };
+  const close = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
+
+  document.getElementById('settingsBtn').addEventListener('click', open);
+  document.getElementById('accountClose').addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+  // Change password
+  document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pwd = document.getElementById('newPassword').value;
+    const conf = document.getElementById('confirmPassword').value;
+    const status = document.getElementById('passwordStatus');
+
+    if (pwd.length < 6) { status.textContent = '❌ 6 caractères minimum.'; status.className = 'text-center text-sm text-terracotta'; status.classList.remove('hidden'); return; }
+    if (pwd !== conf) { status.textContent = '❌ Les mots de passe ne correspondent pas.'; status.className = 'text-center text-sm text-terracotta'; status.classList.remove('hidden'); return; }
+
+    const { error } = await supabaseClient.auth.updateUser({ password: pwd });
+    if (error) { status.textContent = '❌ ' + error.message; status.className = 'text-center text-sm text-terracotta'; status.classList.remove('hidden'); return; }
+    status.textContent = '✅ Mot de passe mis à jour.'; status.className = 'text-center text-sm text-gold'; status.classList.remove('hidden');
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    setTimeout(() => status.classList.add('hidden'), 4000);
+  });
+
+  document.getElementById('signOutAllBtn').addEventListener('click', async () => {
+    if (!confirm('Déconnecter toutes les sessions ?')) return;
+    await supabaseClient.auth.signOut({ scope: 'global' });
+    window.location.reload();
+  });
+}
+
+/* ============================
    NAVIGATION
    ============================ */
 function initNav() {
-  // Sélecteur de pôle
   document.querySelectorAll('.brand-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.brand-tab').forEach(t => t.classList.remove('active'));
@@ -88,7 +135,6 @@ function initNav() {
     });
   });
 
-  // Onglets de section
   document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -101,7 +147,7 @@ function initNav() {
 }
 
 /* ============================
-   LOAD EVERYTHING
+   LOAD
    ============================ */
 async function loadEverything() {
   await Promise.all([
@@ -125,55 +171,67 @@ async function loadContentAdmin() {
   list.innerHTML = '';
 
   const { data, error } = await supabaseClient
-    .from('content')
-    .select('*')
-    .eq('brand', currentBrand);
+    .from('content').select('*').eq('brand', currentBrand);
 
   if (error) { console.error(error); loading.textContent = 'Erreur : ' + error.message; return; }
   contentData = {};
   (data || []).forEach(row => contentData[row.key] = row.value);
 
   if (Object.keys(contentData).length === 0) {
-    loading.textContent = 'Aucun contenu dans ce pôle pour le moment.';
+    loading.textContent = 'Aucun contenu. Cliquez sur "+ Ajouter un bloc" pour commencer.';
     return;
   }
 
-  // Rendu des formulaires selon le pôle
   list.innerHTML = Object.keys(contentData).map(key => renderContentForm(key, contentData[key])).join('');
 
-  // Attache les submit
   list.querySelectorAll('form.content-form').forEach(form => {
     form.addEventListener('submit', (e) => saveContentForm(e, form));
   });
+
+  // Boutons "supprimer le bloc"
+  list.querySelectorAll('.delete-block-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteContentBlock(btn.dataset.key));
+  });
+
+  // Éditeur services
+  initServicesEditor();
 
   loading.classList.add('hidden');
   wrapper.classList.remove('hidden');
 }
 
 function renderContentForm(key, obj) {
-  // Services : cas particulier avec items
-  if (key === 'services') {
-    return renderServicesForm(key, obj);
-  }
+  // Cas particulier : services
+  if (key === 'services') return renderServicesForm(key, obj);
 
-  // Contenu générique : chaque clé devient un champ
-  const fields = Object.keys(obj).map(k => {
+  // Détermine les champs à afficher
+  const knownKeys = KNOWN_FIELDS[key] || [];
+  const allKeys = Object.keys(obj).filter(k => {
+    const v = obj[k];
+    return !Array.isArray(v) && (typeof v !== 'object' || v === null);
+  });
+
+  // Ordonne : champs connus d'abord, puis les autres
+  const orderedKeys = [
+    ...knownKeys.filter(k => allKeys.includes(k)),
+    ...allKeys.filter(k => !knownKeys.includes(k)),
+  ];
+
+  const fields = orderedKeys.map(k => {
     const val = obj[k];
-    // Ignorer les tableaux complexes (items, etc.)
-    if (Array.isArray(val) || (typeof val === 'object' && val !== null)) return '';
-
+    const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const isLong = typeof val === 'string' && val.length > 60;
     const input = isLong
       ? `<textarea name="${k}" rows="2">${escapeHtml(val)}</textarea>`
       : `<input name="${k}" type="text" value="${escapeHtml(val)}" />`;
-
-    return `<div class="field"><label>${k}</label>${input}</div>`;
+    return `<div class="field"><label>${label}</label>${input}</div>`;
   }).join('');
 
   return `
     <form class="content-form border border-sand p-5 md:p-6" data-key="${key}">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
         <p class="text-xs uppercase tracking-widest text-espresso/50">${key}</p>
+        <button type="button" class="delete-block-btn text-xs uppercase tracking-widest text-terracotta hover:underline" data-key="${key}">Supprimer ce bloc</button>
       </div>
       <div class="grid md:grid-cols-2 gap-5">${fields}</div>
       <button type="submit" class="btn-whatsapp mt-6">Enregistrer</button>
@@ -184,7 +242,30 @@ function renderContentForm(key, obj) {
 
 function renderServicesForm(key, obj) {
   const items = obj.items || [];
-  const itemsHTML = items.map((it, i) => `
+  const itemsHTML = items.map((it, i) => serviceItemHTML(it, i)).join('');
+
+  const metaFields = ['tag_fr', 'tag_en', 'title_fr', 'title_en'].map(k => `
+    <div class="field"><label>${k}</label><input name="${k}" value="${escapeHtml(obj[k] || '')}" /></div>
+  `).join('');
+
+  return `
+    <form class="content-form border border-sand p-5 md:p-6" data-key="${key}" id="servicesForm">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <p class="text-xs uppercase tracking-widest text-espresso/50">${key}</p>
+        <button type="button" class="delete-block-btn text-xs uppercase tracking-widest text-terracotta hover:underline" data-key="${key}">Supprimer ce bloc</button>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5 mb-8">${metaFields}</div>
+      <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Liste des services</p>
+      <div id="servicesListAdmin" class="space-y-4">${itemsHTML}</div>
+      <button type="button" id="addServiceBtn" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest mt-4 hover:bg-espresso hover:text-alabaster transition">+ Ajouter un service</button>
+      <button type="submit" class="btn-whatsapp mt-6">Enregistrer</button>
+      <p class="text-sm text-gold mt-3 save-status"></p>
+    </form>
+  `;
+}
+
+function serviceItemHTML(it, i) {
+  return `
     <div class="border border-sand p-4 relative" data-idx="${i}">
       <button type="button" class="absolute top-3 right-3 text-terracotta text-xs uppercase tracking-widest remove-service">Supprimer</button>
       <div class="grid md:grid-cols-2 gap-4">
@@ -196,27 +277,10 @@ function renderServicesForm(key, obj) {
         <div class="field"><label>Description EN</label><textarea class="svc-desc-en" rows="2">${escapeHtml(it.desc_en || '')}</textarea></div>
       </div>
     </div>
-  `).join('');
-
-  const metaFields = ['tag_fr', 'tag_en', 'title_fr', 'title_en'].map(k => `
-    <div class="field"><label>${k}</label><input name="${k}" value="${escapeHtml(obj[k] || '')}" /></div>
-  `).join('');
-
-  return `
-    <form class="content-form border border-sand p-5 md:p-6" data-key="${key}" id="servicesForm">
-      <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">services</p>
-      <div class="grid md:grid-cols-2 gap-5 mb-8">${metaFields}</div>
-      <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Liste des services</p>
-      <div id="servicesListAdmin" class="space-y-4">${itemsHTML}</div>
-      <button type="button" id="addServiceBtn" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest mt-4 hover:bg-espresso hover:text-alabaster transition">+ Ajouter</button>
-      <button type="submit" class="btn-whatsapp mt-6">Enregistrer</button>
-      <p class="text-sm text-gold mt-3 save-status"></p>
-    </form>
   `;
 }
 
 function initServicesEditor() {
-  // Appelé après chaque renderContentForm
   const list = document.getElementById('servicesListAdmin');
   if (!list) return;
 
@@ -243,19 +307,7 @@ function initServicesEditor() {
 function renderServicesEditor(items) {
   const list = document.getElementById('servicesListAdmin');
   if (!list) return;
-  list.innerHTML = items.map((it, i) => `
-    <div class="border border-sand p-4 relative" data-idx="${i}">
-      <button type="button" class="absolute top-3 right-3 text-terracotta text-xs uppercase tracking-widest remove-service">Supprimer</button>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="field"><label>Numéro</label><input class="svc-num" value="${escapeHtml(it.num || '')}" /></div>
-        <div class="field"></div>
-        <div class="field"><label>Titre FR</label><input class="svc-title-fr" value="${escapeHtml(it.title_fr || '')}" /></div>
-        <div class="field"><label>Titre EN</label><input class="svc-title-en" value="${escapeHtml(it.title_en || '')}" /></div>
-        <div class="field"><label>Description FR</label><textarea class="svc-desc-fr" rows="2">${escapeHtml(it.desc_fr || '')}</textarea></div>
-        <div class="field"><label>Description EN</label><textarea class="svc-desc-en" rows="2">${escapeHtml(it.desc_en || '')}</textarea></div>
-      </div>
-    </div>
-  `).join('');
+  list.innerHTML = items.map((it, i) => serviceItemHTML(it, i)).join('');
   initServicesEditor();
 }
 
@@ -276,7 +328,6 @@ async function saveContentForm(e, form) {
   status.textContent = 'Enregistrement…';
 
   let value;
-
   if (key === 'services') {
     value = {
       tag_fr: form.querySelector('[name="tag_fr"]').value,
@@ -287,10 +338,8 @@ async function saveContentForm(e, form) {
     };
   } else {
     value = {};
-    form.querySelectorAll('[name]').forEach(field => {
-      value[field.name] = field.value;
-    });
-    // Préserve les champs non affichés (items, etc.)
+    form.querySelectorAll('[name]').forEach(field => { value[field.name] = field.value; });
+    // Préserve les objets/arrays non affichés
     const original = contentData[key] || {};
     Object.keys(original).forEach(k => {
       if (Array.isArray(original[k]) || (typeof original[k] === 'object' && original[k] !== null)) {
@@ -299,13 +348,48 @@ async function saveContentForm(e, form) {
     });
   }
 
-  const { error } = await supabaseClient.from('content').upsert({
-    key, brand: currentBrand, value
-  });
-
+  const { error } = await supabaseClient.from('content').upsert({ key, brand: currentBrand, value });
   if (error) { status.textContent = '❌ ' + error.message; return; }
   status.textContent = '✅ Enregistré';
   setTimeout(() => status.textContent = '', 3000);
+}
+
+async function deleteContentBlock(key) {
+  if (!confirm(`Supprimer définitivement le bloc "${key}" ? Cette action est irréversible.`)) return;
+  await supabaseClient.from('content').delete().eq('key', key).eq('brand', currentBrand);
+  loadContentAdmin();
+}
+
+/* ============================
+   AJOUT DE BLOC DE CONTENU
+   ============================ */
+function initAddContent() {
+  document.getElementById('addContentBtn').addEventListener('click', async () => {
+    const key = prompt('Nom du nouveau bloc (ex: tarifs, événements, section_promo) :');
+    if (!key || !key.trim()) return;
+    const cleanKey = key.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+
+    // Vérifie si existe déjà
+    if (contentData[cleanKey]) { alert('Ce bloc existe déjà.'); return; }
+
+    // Demande les champs (optionnel)
+    const fieldsStr = prompt(
+      'Champs du bloc (séparés par des virgules) :\n\nExemple : title_fr, title_en, body_fr, body_en, image_url',
+      'title_fr, title_en, body_fr, body_en'
+    );
+    if (fieldsStr === null) return;
+
+    const fields = fieldsStr.split(',').map(f => f.trim()).filter(Boolean);
+    const value = {};
+    fields.forEach(f => value[f] = '');
+
+    const { error } = await supabaseClient.from('content').insert([{
+      key: cleanKey, brand: currentBrand, value
+    }]);
+
+    if (error) { alert('Erreur : ' + error.message); return; }
+    loadContentAdmin();
+  });
 }
 
 /* ============================
@@ -313,8 +397,7 @@ async function saveContentForm(e, form) {
    ============================ */
 async function loadGalleryAdmin() {
   const { data, error } = await supabaseClient
-    .from('media').select('*')
-    .eq('brand', currentBrand)
+    .from('media').select('*').eq('brand', currentBrand)
     .order('created_at', { ascending: false });
   if (error) return console.error(error);
   allMediaAdmin = data || [];
@@ -400,8 +483,7 @@ function initMediaUpload() {
    ============================ */
 async function loadReviewsAdmin() {
   const { data, error } = await supabaseClient
-    .from('reviews').select('*')
-    .eq('brand', currentBrand)
+    .from('reviews').select('*').eq('brand', currentBrand)
     .order('created_at', { ascending: false });
   if (error) return console.error(error);
   allReviewsAdmin = data || [];
@@ -418,7 +500,6 @@ function renderReviewsAdmin() {
     list.innerHTML = `<p class="text-center font-serif italic text-espresso/60 py-12">Aucun avis dans cette catégorie.</p>`;
     return;
   }
-
   list.innerHTML = filtered.map(r => `
     <div class="border border-sand p-4 md:p-6">
       <div class="flex items-start justify-between gap-4 flex-wrap mb-4">
@@ -507,8 +588,7 @@ function initReviewFilters() {
    ============================ */
 async function loadBookingsAdmin() {
   const { data, error } = await supabaseClient
-    .from('bookings').select('*')
-    .eq('brand', currentBrand)
+    .from('bookings').select('*').eq('brand', currentBrand)
     .order('created_at', { ascending: false });
   if (error) return console.error(error);
   allBookingsAdmin = data || [];
@@ -549,8 +629,7 @@ async function deleteBooking(id) {
    ============================ */
 async function loadFaqAdmin() {
   const { data, error } = await supabaseClient
-    .from('faq').select('*')
-    .eq('brand', currentBrand)
+    .from('faq').select('*').eq('brand', currentBrand)
     .order('sort_order', { ascending: true });
   if (error) return console.error(error);
   allFaqAdmin = data || [];
@@ -624,15 +703,10 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', async () => {
   initLogin();
   initNav();
+  initAccountModal();
   initReviewFilters();
   initMediaUpload();
   initFaqAdd();
+  initAddContent();
   await checkSession();
 });
-
-// Renforce l'initialisation du services editor après chaque chargement
-const _originalLoadContentAdmin = loadContentAdmin;
-loadContentAdmin = async function() {
-  await _originalLoadContentAdmin();
-  initServicesEditor();
-};
