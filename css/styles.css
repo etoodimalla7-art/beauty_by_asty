@@ -330,3 +330,65 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
   color: #B8895A;
 }
 }
+/* ============================================
+   HERO ANIMÉ
+   ============================================ */
+@keyframes slowZoom {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+.animate-slow-zoom {
+  animation: slowZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up-1 { animation: fadeUp 1s ease-out 0.2s forwards; }
+.animate-fade-up-2 { animation: fadeUp 1.2s ease-out 0.5s forwards; }
+.animate-fade-up-3 { animation: fadeUp 1s ease-out 1s forwards; }
+.animate-fade-up-4 { animation: fadeUp 1s ease-out 1.4s forwards; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.animate-fade-in-5 { animation: fadeIn 1s ease-out 2s forwards; }
+
+@keyframes scrollLine {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-line { animation: scrollLine 2s ease-in-out infinite; }
+
+/* ============================================
+   CAROUSEL TÉMOIGNAGES
+   ============================================ */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+#groupReviewsList > * {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+}
+@media (min-width: 640px) {
+  #groupReviewsList > * { flex: 0 0 calc(50% - 1rem); }
+}
+@media (min-width: 1024px) {
+  #groupReviewsList > * { flex: 0 0 calc(33.333% - 1.4rem); }
+}
+
+/* ============================================
+   CARTES UNIVERS
+   ============================================ */
+.brand-card {
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+.brand-card img {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.brand-card:hover img {
+  transform: scale(1.05);
+}
