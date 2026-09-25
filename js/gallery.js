@@ -1,5 +1,5 @@
 /* ============================================
-   GALLERY — Supabase + Lightbox + Voir plus
+   GALLERY — Supabase + Lightbox + Voir plus + Bilingue
    ============================================ */
 window.allMedia = [];
 let currentFilter = 'all';
@@ -7,8 +7,8 @@ let currentMedia = [];
 let currentIndex = 0;
 
 /* Nombre d'items visibles au départ */
-const INITIAL_COUNT_MOBILE  = 4;   // < 640px
-const INITIAL_COUNT_DESKTOP = 6;   // ≥ 640px
+const INITIAL_COUNT_MOBILE  = 4;
+const INITIAL_COUNT_DESKTOP = 6;
 
 let isExpanded = false;
 
@@ -16,12 +16,26 @@ function getInitialCount() {
   return window.innerWidth < 640 ? INITIAL_COUNT_MOBILE : INITIAL_COUNT_DESKTOP;
 }
 
+/* Retourne la bonne légende selon la langue courante */
+function getCaption(item) {
+  if (!item) return '';
+  if (currentLang === 'fr') return item.caption_fr || item.caption || '';
+  return item.caption_en || item.caption || '';
+}
+
+/* Retourne le bon tag selon la langue courante */
+function getTag(item) {
+  if (!item) return '';
+  if (currentLang === 'fr') return item.tag_fr || item.tag || '';
+  return item.tag_en || item.tag || '';
+}
+
 async function loadGallery() {
   const { data, error } = await supabaseClient
     .from('media')
     .select('*')
-     .eq('brand', window.BRAND || 'beauty')
-     .order('sort_order', { ascending: true })
+    .eq('brand', window.BRAND || 'beauty')
+    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
   if (error) { console.error('loadGallery', error); return; }
   window.allMedia = data || [];
@@ -29,15 +43,19 @@ async function loadGallery() {
 }
 
 function renderGallery() {
-  const grid    = document.getElementById('galleryGrid');
-  const filters = document.getElementById('galleryFilters');
-  const empty   = document.getElementById('galleryEmpty');
+  const grid     = document.getElementById('galleryGrid');
+  const filters  = document.getElementById('galleryFilters');
+  const empty    = document.getElementById('galleryEmpty');
   const moreWrap = document.getElementById('galleryMoreWrap');
-  const moreBtn = document.getElementById('galleryMoreBtn');
+  const moreBtn  = document.getElementById('galleryMoreBtn');
   if (!grid || !filters) return;
 
-  /* ---------- Filtres ---------- */
-  const tags = ['all', ...new Set(window.allMedia.map(m => m.tag).filter(Boolean))];
+  /* ---------- Filtres (tags bilingues) ---------- */
+  const rawTags = window.allMedia
+    .map(m => getTag(m))
+    .filter(Boolean);
+  const tags = ['all', ...new Set(rawTags)];
+
   filters.innerHTML = tags.map(tag => `
     <button class="filter-btn ${tag === currentFilter ? 'active' : ''}" data-tag="${tag}">
       ${tag === 'all' ? t('gallery.all') : tag.charAt(0).toUpperCase() + tag.slice(1)}
@@ -47,7 +65,7 @@ function renderGallery() {
   filters.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentFilter = btn.dataset.tag;
-      isExpanded = false; // reset l'expansion quand on change de filtre
+      isExpanded = false;
       renderGallery();
     });
   });
@@ -55,12 +73,12 @@ function renderGallery() {
   /* ---------- Sélection ---------- */
   currentMedia = currentFilter === 'all'
     ? window.allMedia
-    : window.allMedia.filter(m => m.tag === currentFilter);
+    : window.allMedia.filter(m => getTag(m) === currentFilter);
 
   if (currentMedia.length === 0) {
     grid.innerHTML = '';
     empty.classList.remove('hidden');
-    moreWrap.classList.add('hidden');
+    if (moreWrap) moreWrap.classList.add('hidden');
     return;
   }
   empty.classList.add('hidden');
@@ -72,11 +90,13 @@ function renderGallery() {
 
   /* ---------- Rendu des items ---------- */
   grid.innerHTML = visibleMedia.map((item, i) => {
+    const caption = getCaption(item);
+
     if (item.type === 'image') {
       return `
         <div class="gallery-item" data-index="${i}">
-          <img src="${item.url}" alt="${item.caption || ''}" loading="lazy" />
-          <span class="gallery-caption">${item.caption || ''}</span>
+          <img src="${item.url}" alt="${caption}" loading="lazy" />
+          <span class="gallery-caption">${caption}</span>
         </div>`;
     }
     return `
@@ -88,7 +108,7 @@ function renderGallery() {
             <polygon points="10 8 16 12 10 16 10 8"/>
           </svg>
         </span>
-        <span class="gallery-caption">${item.caption || ''}</span>
+        <span class="gallery-caption">${caption}</span>
       </div>`;
   }).join('');
 
@@ -97,42 +117,44 @@ function renderGallery() {
   });
 
   /* ---------- Bouton Voir plus / Voir moins ---------- */
-  if (hasMore || isExpanded) {
-    moreWrap.classList.remove('hidden');
-    moreBtn.querySelector('span').textContent = isExpanded
-      ? t('gallery.seeLess')
-      : t('gallery.seeMore');
-  } else {
-    moreWrap.classList.add('hidden');
-  }
+  if (moreWrap && moreBtn) {
+    if (hasMore || isExpanded) {
+      moreWrap.classList.remove('hidden');
+      moreBtn.querySelector('span').textContent = isExpanded
+        ? t('gallery.seeLess')
+        : t('gallery.seeMore');
+    } else {
+      moreWrap.classList.add('hidden');
+    }
 
-  /* ---------- Attache l'écouteur une seule fois ---------- */
-  if (!moreBtn.dataset.bound) {
-    moreBtn.addEventListener('click', () => {
-      isExpanded = !isExpanded;
-      renderGallery();
-      if (!isExpanded) {
-        document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-    moreBtn.dataset.bound = 'true';
+    if (!moreBtn.dataset.bound) {
+      moreBtn.addEventListener('click', () => {
+        isExpanded = !isExpanded;
+        renderGallery();
+        if (!isExpanded) {
+          document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+      moreBtn.dataset.bound = 'true';
+    }
   }
 }
 
-/* ---------- LIGHTBOX (inchangé) ---------- */
+/* ---------- LIGHTBOX ---------- */
 function openLightbox(index) {
   currentIndex = index;
   const lb = document.getElementById('lightbox');
   const content = document.getElementById('lbContent');
   const caption = document.getElementById('lbCaption');
   const item = currentMedia[currentIndex];
+  const cap = getCaption(item);
 
   if (item.type === 'image') {
-    content.innerHTML = `<img src="${item.url}" alt="${item.caption || ''}" />`;
+    content.innerHTML = `<img src="${item.url}" alt="${cap}" />`;
   } else {
     content.innerHTML = `<video src="${item.url}" controls autoplay playsinline></video>`;
   }
-  caption.textContent = item.caption || '';
+  caption.textContent = cap;
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -151,22 +173,23 @@ function navigateLightbox(dir) {
 }
 
 function initLightbox() {
+  const lb = document.getElementById('lightbox');
+  if (!lb) return;
   document.getElementById('lbClose').addEventListener('click', closeLightbox);
   document.getElementById('lbPrev').addEventListener('click', () => navigateLightbox(-1));
   document.getElementById('lbNext').addEventListener('click', () => navigateLightbox(1));
 
   document.addEventListener('keydown', (e) => {
-    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (!lb.classList.contains('open')) return;
     if (e.key === 'Escape') closeLightbox();
     if (e.key === 'ArrowLeft') navigateLightbox(-1);
     if (e.key === 'ArrowRight') navigateLightbox(1);
   });
 
-  document.getElementById('lightbox').addEventListener('click', (e) => {
+  lb.addEventListener('click', (e) => {
     if (e.target.id === 'lightbox') closeLightbox();
   });
 
-  /* Re-render quand on redimensionne la fenêtre (mobile → desktop) */
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
