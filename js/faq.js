@@ -7,8 +7,8 @@ async function loadFAQ() {
   const { data, error } = await supabaseClient
     .from('faq')
     .select('*')
-    .eq('brand', 'beauty')
-    .order('sort_order', { ascending: true });
+     .eq('brand', window.BRAND || 'beauty')
+     .order('sort_order', { ascending: true });
   if (error) { console.error('loadFAQ', error); return; }
   window.faqData = data || [];
   renderFAQ(window.faqData);
