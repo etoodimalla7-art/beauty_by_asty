@@ -1,5 +1,5 @@
 /* ============================================
-   ADMIN v2 — Contrôle total multi-pôles
+   ADMIN v3 — Contrôle total multi-pôles + upload
    ============================================ */
 let session = null;
 let currentBrand = 'group';
@@ -12,15 +12,15 @@ let allMediaAdmin = [];
 let allBookingsAdmin = [];
 let allFaqAdmin = [];
 
-/* Détection bilingue : clés qui finissent par _fr ou _en */
+/* Détection bilingue */
 function isBilingualKey(key) { return key.endsWith('_fr') || key.endsWith('_en'); }
 function baseKey(key) { return key.replace(/_(fr|en)$/, ''); }
 
-/* Labels FR pour les champs techniques */
+/* Labels FR */
 const FIELD_LABELS = {
-  bg_url: 'Image de fond (URL)',
-  image_url: 'Image (URL)',
-  photo_url: 'Photo (URL)',
+  bg_url: 'Image de fond',
+  image_url: 'Image',
+  photo_url: 'Photo',
   location_label: 'Localisation',
   tag: 'Étiquette',
   title: 'Titre',
@@ -46,7 +46,7 @@ const FIELD_LABELS = {
   made: 'Ligne "made in"',
 };
 
-/* Champs connus par bloc (dans l'ordre d'affichage) */
+/* Champs connus par bloc */
 const KNOWN_FIELDS = {
   hero: ['bg_url','location_label','title','subtitle','cta1','cta2'],
   about: ['image_url','tag','title','body1','body2'],
@@ -59,6 +59,11 @@ const KNOWN_FIELDS = {
   group_contact: ['tag','title','address','phone','phone_wa','email','map_embed'],
   group_footer: ['tagline','made'],
 };
+
+/* Détecte si un champ est un champ image (upload) */
+function isImageField(key) {
+  return key.includes('_url') || key.includes('image') || key.includes('photo') || key === 'bg_url';
+}
 
 /* ============================
    AUTH
@@ -159,7 +164,6 @@ function initNav() {
       document.querySelectorAll('.brand-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentBrand = tab.dataset.brandSelect;
-      // Met à jour le lien "Voir le site"
       const link = document.getElementById('viewSiteLink');
       if (link) {
         const urls = { group: 'index.html', beauty: 'beauty.html', deco: 'deco.html', studio: 'studio.html' };
@@ -219,11 +223,34 @@ async function loadContentAdmin() {
 
   list.innerHTML = Object.keys(contentData).map(key => renderContentForm(key, contentData[key])).join('');
 
+  // Attache les submit
   list.querySelectorAll('form.content-form').forEach(form => {
     form.addEventListener('submit', (e) => saveContentForm(e, form));
   });
+  // Supprimer bloc
   list.querySelectorAll('.delete-block-btn').forEach(btn => {
     btn.addEventListener('click', () => deleteContentBlock(btn.dataset.key));
+  });
+  // Upload d'images
+  list.querySelectorAll('.img-file-input').forEach(fileInput => {
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const target = e.target.dataset.target;
+      const status = e.target.parentElement.querySelector('.img-upload-status');
+      status.textContent = 'Upload…';
+
+      const url = await uploadFile(file);
+      if (!url) { status.textContent = '❌ Erreur'; return; }
+
+      const textInput = list.querySelector(`input[name="${target}"]`);
+      if (textInput) textInput.value = url;
+
+      const preview = e.target.closest('.field').querySelector('.img-preview');
+      if (preview) { preview.src = url; preview.classList.remove('hidden'); }
+
+      status.textContent = '✅ Image prête (cliquez sur Enregistrer)';
+    });
   });
 
   initServicesEditor();
@@ -235,8 +262,7 @@ async function loadContentAdmin() {
 function renderContentForm(key, obj) {
   if (key === 'services') return renderServicesForm(key, obj);
 
-  // Détecte les champs bilingues
-  const bilingual = {}; // { base: { fr: 'x', en: 'y' } }
+  const bilingual = {};
   const commons = [];
 
   Object.keys(obj).forEach(k => {
@@ -253,16 +279,33 @@ function renderContentForm(key, obj) {
     }
   });
 
-  // Détermine l'ordre des champs
   const knownOrder = KNOWN_FIELDS[key] || [];
   const orderedBases = [
     ...knownOrder.filter(b => bilingual[b]),
     ...Object.keys(bilingual).filter(b => !knownOrder.includes(b)),
   ];
 
-  // Champs communs en haut
+  /* Champs communs — avec upload si champ image */
   const commonsHTML = commons.map(({ key: k, value: v }) => {
     const label = FIELD_LABELS[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+    if (isImageField(k)) {
+      return `
+        <div class="field" data-image-field="${k}">
+          <label>${label}</label>
+          <input name="${k}" type="text" value="${escapeHtml(v)}" class="img-url-input" placeholder="https://..." />
+          <div class="flex items-center gap-3 mt-2">
+            <label class="cursor-pointer border border-espresso px-3 py-1 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+              Choisir un fichier
+              <input type="file" accept="image/*" class="img-file-input hidden" data-target="${k}" />
+            </label>
+            <span class="text-xs text-gold img-upload-status"></span>
+          </div>
+          <img class="mt-3 w-full max-w-xs h-24 object-cover border border-sand img-preview ${v ? '' : 'hidden'}" src="${v ? escapeHtml(v) : ''}" />
+        </div>
+      `;
+    }
+
     const isLong = typeof v === 'string' && v.length > 60;
     const input = isLong
       ? `<textarea name="${k}" rows="2">${escapeHtml(v)}</textarea>`
@@ -270,7 +313,7 @@ function renderContentForm(key, obj) {
     return `<div class="field"><label>${label}</label>${input}</div>`;
   }).join('');
 
-  // Champs bilingues côte à côte
+  /* Champs bilingues */
   const bilingualHTML = orderedBases.map(base => {
     const label = FIELD_LABELS[base] || base.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const fr = bilingual[base].fr ?? '';
@@ -340,12 +383,8 @@ function renderServicesForm(key, obj) {
       </div>
 
       <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Titre du bloc</p>
-      <div class="bilingual-row mb-8">
-        ${metaFrHTML}
-      </div>
-      <div class="bilingual-row mb-8">
-        ${metaEnHTML}
-      </div>
+      <div class="bilingual-row mb-4">${metaFrHTML}</div>
+      <div class="bilingual-row mb-8">${metaEnHTML}</div>
 
       <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Liste des services</p>
       <div id="servicesListAdmin" class="space-y-4">${itemsHTML}</div>
@@ -471,7 +510,6 @@ function initAddContent() {
     const bases = fieldsStr.split(',').map(f => f.trim()).filter(Boolean);
     const value = {};
     bases.forEach(base => {
-      // Chaque champ aura une version FR + EN sauf si URL/image
       if (base.includes('url') || base === 'name') {
         value[base] = '';
       } else {
@@ -510,8 +548,9 @@ async function loadGalleryAdmin() {
         ? `<img src="${m.url}" class="w-full h-40 object-cover" />`
         : `<video src="${m.url}" class="w-full h-40 object-cover" muted></video>`}
       <div class="p-3">
-        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">${escapeHtml(m.tag_fr || m.tag || '—')}</p>
+        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">FR: ${escapeHtml(m.tag_fr || m.tag || '—')}</p>
         <p class="font-serif italic text-sm mb-1">${escapeHtml(m.caption_fr || m.caption || '')}</p>
+        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">EN: ${escapeHtml(m.tag_en || '—')}</p>
         <p class="font-serif italic text-xs text-espresso/50 mb-3">${escapeHtml(m.caption_en || '')}</p>
         <div class="flex gap-2">
           <button onclick="editMedia('${m.id}')" class="text-xs uppercase tracking-widest text-espresso hover:underline">Modifier</button>
@@ -577,7 +616,7 @@ function initMediaUpload() {
       brand: currentBrand, type, url,
       caption_fr: captionFr, caption_en: captionEn,
       tag_fr: tagFr, tag_en: tagEn,
-      caption: captionFr,  // compat ancienne version
+      caption: captionFr,
       tag: tagFr
     }]);
     if (error) { progress.textContent = '❌ ' + error.message; return; }
