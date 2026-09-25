@@ -29,7 +29,7 @@ body { font-weight: 300; letter-spacing: 0.01em; overflow-x: hidden; }
 .nav-link:hover { color: #B8895A; }
 
 /* ============================================
-   BRAND SWITCHER — Navigation entre les pôles
+   BRAND SWITCHER
    ============================================ */
 .brand-switcher {
   background: #1C1410;
@@ -101,7 +101,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 }
 
 /* ============================================
-   LANG TOGGLE (FR / EN)
+   LANG TOGGLE
    ============================================ */
 .lang-btn {
   color: currentColor;
@@ -406,7 +406,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 @keyframes fadeInMenu { from { opacity: 0; } to { opacity: 1; } }
 
 /* ============================================
-   ADMIN — Barre d'onglets (Contenu, Galerie...)
+   ADMIN — Barre d'onglets
    ============================================ */
 .admin-tab {
   padding: 12px 16px;
@@ -426,7 +426,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 .admin-tab:hover { color: #B8895A; opacity: 1; }
 
 /* ============================================
-   ADMIN — Sélecteur de pôle (Groupe / Beauty / Déco / Studio)
+   ADMIN — Sélecteur de pôle
    ============================================ */
 .brand-tab {
   display: inline-block;
@@ -465,7 +465,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 }
 
 /* ============================================
-   ADMIN — Sous-onglets du contenu
+   ADMIN — Sous-onglets
    ============================================ */
 .content-subtab {
   padding: 8px 16px;
@@ -484,7 +484,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 }
 
 /* ============================================
-   ADMIN — Champs bilingues côte à côte
+   ADMIN — Champs bilingues
    ============================================ */
 .bilingual-row {
   display: grid;
@@ -496,8 +496,6 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
   }
-}
-@media (min-width: 768px) {
   .bilingual-row > div:first-child {
     padding-right: 16px;
     border-right: 1px solid #E8DDD0;
@@ -573,18 +571,128 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 }
 
 /* ============================================
-   CARTES UNIVERS
+   CARTES UNIVERS — Responsive parfait
    ============================================ */
 .brand-card {
   position: relative;
   overflow: hidden;
   display: block;
+  text-decoration: none;
+  color: inherit;
 }
+
 .brand-card img {
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
+
 .brand-card:hover img {
   transform: scale(1.05);
+}
+
+/* Conteneur grid des 3 cartes univers */
+#groupBrandsList {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+/* Tablette : 2 colonnes */
+@media (min-width: 640px) {
+  #groupBrandsList {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  /* La 3e carte passe en dessous, centrée */
+  #groupBrandsList > *:nth-child(3) {
+    grid-column: 1 / -1;
+    max-width: calc(50% - 1rem);
+    margin: 0 auto;
+  }
+}
+
+/* Desktop : 3 colonnes */
+@media (min-width: 1024px) {
+  #groupBrandsList {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  #groupBrandsList > *:nth-child(3) {
+    grid-column: auto;
+    max-width: none;
+    margin: 0;
+  }
+}
+
+/* Ratio des images : portrait 3:4 */
+.brand-card > div:first-child {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #E8DDD0;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .brand-card > div:first-child {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+/* Titre de la carte */
+.brand-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+@media (min-width: 768px) {
+  .brand-card h3 {
+    font-size: 1.875rem;
+  }
+}
+@media (max-width: 640px) {
+  .brand-card h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Description de la carte */
+.brand-card p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(28, 20, 16, 0.7);
+  margin-bottom: 1rem;
+}
+@media (max-width: 640px) {
+  .brand-card p {
+    font-size: 0.8rem;
+  }
+}
+
+/* Flèche CTA */
+.brand-card span.inline-flex {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+.brand-card:hover span.inline-flex {
+  color: #B8895A;
+}
+
+/* Réduction padding section sur mobile */
+@media (max-width: 640px) {
+  #brands {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  #groupBrandsTitle {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
 }
 
 /* ============================================
@@ -598,6 +706,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
     padding-right: 1.25rem;
   }
 }
+
 /* ============================================
    ACCESSIBILITÉ — Skip link
    ============================================ */
