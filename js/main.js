@@ -1,3 +1,5 @@
+// Force la marque selon la page (beauty | deco | studio)
+  window.BRAND = window.BRAND || 'beauty';
 /* ============================================
    PUBLIC SITE — Orchestration
    ============================================ */
