@@ -9,7 +9,7 @@ async function loadContent() {
   const { data, error } = await supabaseClient
     .from('content')
     .select('*')
-    .eq('brand', 'beauty');
+ .eq('brand', window.BRAND || 'beauty');
    
   if (error) { console.error('loadContent', error); return; }
   (data || []).forEach(row => {
