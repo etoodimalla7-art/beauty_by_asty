@@ -12,6 +12,12 @@ const translations = {
      seeMore: "Voir plus",
      seeLess: "Voir moins"
    },
+     switcher: {
+       group: "Beauty by Asty — Groupe",
+       beauty: "Beauty",
+       deco: "Déco",
+       studio: "Studio"
+   },
     reviews: {
       tag: "Avis", title: "Ce que disent nos clientes",
       empty: "Soyez la première à laisser un avis.",
@@ -44,7 +50,13 @@ const translations = {
      all: "All",
      seeMore: "See more",
      seeLess: "See less"
-   },   
+   },  
+     switcher: {
+      group: "Beauty by Asty — Group",
+      beauty: "Beauty",
+      deco: "Déco",
+      studio: "Studio"
+   },
       reviews: {
       tag: "Reviews", title: "What our clients say",
       empty: "Be the first to leave a review.",
