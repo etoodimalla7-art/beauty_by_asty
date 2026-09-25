@@ -434,3 +434,45 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
   font-size: 0.65em;
   margin-left: 4px;
 }
+
+/* ============================================
+   ADMIN — Sélecteur de pôle (onglets)
+   ============================================ */
+.brand-tab {
+  display: inline-block;
+  padding: 14px 28px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  border: 1px solid transparent;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #1C1410;
+  opacity: 0.45;
+  margin-right: 6px;
+  outline: none;
+}
+
+.brand-tab:hover {
+  opacity: 1;
+  color: #B8895A;
+  border-bottom-color: #E8DDD0;
+}
+
+.brand-tab.active {
+  opacity: 1;
+  color: #B8895A;
+  border-bottom-color: #B8895A;
+  font-weight: 500;
+}
+
+@media (min-width: 768px) {
+  .brand-tab {
+    padding: 16px 36px;
+    font-size: 0.75rem;
+  }
+}
