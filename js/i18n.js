@@ -90,6 +90,7 @@ function t(path) {
 
 function applyStaticTranslations() {
   document.documentElement.setAttribute('lang', currentLang);
+  // On cible TOUT le document, y compris les éléments injectés
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const v = t(el.getAttribute('data-i18n'));
     if (v) el.textContent = v;
