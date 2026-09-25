@@ -392,3 +392,31 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 .brand-card:hover img {
   transform: scale(1.05);
 }
+/* ============================================
+   ADMIN v2 — Champs bilingues côte à côte
+   ============================================ */
+.bilingual-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .bilingual-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
+/* Séparateur visuel discret entre FR et EN */
+@media (min-width: 768px) {
+  .bilingual-row > div:first-child {
+    padding-right: 16px;
+    border-right: 1px solid #E8DDD0;
+  }
+}
+
+/* Étiquette FR / EN dans les labels */
+.bilingual-row label span.text-gold {
+  font-size: 0.65em;
+  margin-left: 4px;
+}
