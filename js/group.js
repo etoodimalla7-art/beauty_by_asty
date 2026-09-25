@@ -29,11 +29,18 @@ function renderGroupContent() {
     setText('groupHeroCta2', pick(g.group_hero, 'cta2'));
   }
 
-  /* ---------- MANIFESTE ---------- */
-  const manifestoTag = document.getElementById('groupManifestoTag');
-  if (manifestoTag) {
-    const manifestoFr = pick(g.group_about || {}, 'body1') || "La beauté n'est pas un seul geste, c'est une manière d'être. Beauty by Asty réunit trois maisons où le raffinement se décline — sur un visage, dans un espace, à travers une image.";
-    setText('groupManifestoText', manifestoFr);
+  /* ---------- MANIFESTE (utilise group_about.body1) ---------- */
+  if (g.group_about) {
+    setText('groupManifestoTag', pick(g.group_about, 'tag') || 'Manifeste');
+    const body = pick(g.group_about, 'body1');
+    setText('groupManifestoText', body);
+  } else {
+    // Fallback si group_about n'existe pas
+    setText('groupManifestoText',
+      currentLang === 'fr'
+        ? "La beauté n'est pas un seul geste, c'est une manière d'être."
+        : "Beauty is not a single gesture — it's a way of being."
+    );
   }
 
   /* ---------- BRANDS ---------- */
@@ -65,7 +72,8 @@ function renderGroupContent() {
     if (img && g.group_founder.photo_url) img.src = g.group_founder.photo_url;
     setText('groupFounderTag', pick(g.group_founder, 'tag'));
     setText('groupFounderTitle', pick(g.group_founder, 'title'));
-    setText('groupFounderQuote', `"${pick(g.group_founder, 'quote')}"`);
+    const q = pick(g.group_founder, 'quote');
+    setText('groupFounderQuote', q ? `"${q}"` : '');
     setText('groupFounderBio', pick(g.group_founder, 'bio'));
   }
 
@@ -103,7 +111,7 @@ function setText(id, value) {
   if (el && value != null) el.textContent = value;
 }
 
-/* ---------- CHARGER LES TÉMOIGNAGES GROUP ---------- */
+/* ---------- TÉMOIGNAGES ---------- */
 async function loadGroupReviews() {
   const { data, error } = await supabaseClient
     .from('reviews').select('*').eq('brand', 'group').eq('status', 'approved')
@@ -217,7 +225,6 @@ function initGroupContactForm() {
       message: document.getElementById('gc-message').value.trim(),
     };
 
-    // Sauvegarde dans une table messages (à créer si absente) OU fallback WhatsApp
     const { error } = await supabaseClient.from('bookings').insert([{
       brand: 'group',
       name: payload.name,
