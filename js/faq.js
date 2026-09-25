@@ -5,7 +5,10 @@ window.faqData = [];
 
 async function loadFAQ() {
   const { data, error } = await supabaseClient
-    .from('faq').select('*').order('sort_order', { ascending: true });
+    .from('faq')
+    .select('*')
+    .eq('brand', 'beauty')
+    .order('sort_order', { ascending: true });
   if (error) { console.error('loadFAQ', error); return; }
   window.faqData = data || [];
   renderFAQ(window.faqData);
