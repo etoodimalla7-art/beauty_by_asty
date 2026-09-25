@@ -1,5 +1,5 @@
 /* ============================================
-   MAIN GROUP — Orchestration page d'accueil groupe
+   MAIN GROUP — Orchestration page groupe
    ============================================ */
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof supabaseClient === 'undefined') {
@@ -7,7 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  /* Lang */
+  // Force la marque group
+  window.BRAND = 'group';
+
   applyStaticTranslations();
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -15,22 +17,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  /* Scroll reveal */
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 80);
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  // Mobile menu
+  const mm = document.getElementById('mobileMenu');
+  document.getElementById('menuToggle').addEventListener('click', () => {
+    mm.classList.remove('hidden'); mm.classList.add('flex');
+  });
+  document.getElementById('menuClose').addEventListener('click', () => {
+    mm.classList.add('hidden'); mm.classList.remove('flex');
+  });
+  mm.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mm.classList.add('hidden'); mm.classList.remove('flex');
+  }));
 
-  /* Charge le contenu groupe */
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', onScroll); onScroll();
+
+  // Charge le contenu groupe
   await loadGroupContent();
   renderGroupContent();
 
-  /* Re-render au changement de langue */
+  // Charge les témoignages groupe
+  await loadGroupReviews();
+
+  // Init forms
+  initGroupStarPicker();
+  initGroupReviewForm();
+  initGroupContactForm();
+
+  // Re-render au changement de langue
   document.addEventListener('asty:lang-changed', () => {
     renderGroupContent();
   });
