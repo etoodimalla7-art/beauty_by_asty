@@ -598,3 +598,21 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
     padding-right: 1.25rem;
   }
 }
+/* ============================================
+   ACCESSIBILITÉ — Skip link
+   ============================================ */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: #1C1410;
+  color: #FAF7F2;
+  padding: 12px 20px;
+  z-index: 999;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: top 0.3s ease;
+}
+.skip-link:focus {
+  top: 0;
+}
