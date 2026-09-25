@@ -113,4 +113,6 @@ function switchLanguage(lang) {
     applyStaticTranslations();
     document.body.classList.remove('lang-fade');
   }, 200);
+       // Notifie les pages qui veulent re-render
+    document.dispatchEvent(new CustomEvent('asty:lang-changed', { detail: { lang } }));
 }
