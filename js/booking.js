@@ -48,8 +48,8 @@ function initBookingForm() {
     // 1) Sauvegarde admin
    const { error } = await supabaseClient
       .from('bookings')
-      .insert([{ ...data, brand: 'beauty' }]);
-   if (error) console.error('booking', error);
+       .insert([{ ...data, brand: window.BRAND || 'beauty' }])
+      if (error) console.error('booking', error);
 
     // 2) WhatsApp
    // ✅ Utilise TOUJOURS le numéro dédié aux réservations (celui de l'admin)
