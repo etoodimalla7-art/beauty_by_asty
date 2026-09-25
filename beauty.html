@@ -426,14 +426,14 @@
 <script>
    window.BRAND = 'beauty';
 </script>
-<script src="js/main.js"></script>
 <script src="js/supabase-config.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/switcher.js"></script>     <!-- ← AJOUTÉ -->
+<script src="js/i18n.js"></script>            <!-- définit currentLang -->
+<script src="js/switcher.js"></script>
 <script src="js/content.js"></script>
-<script src="js/gallery.js"></script>
+<script src="js/gallery.js"></script>         <!-- utilise currentLang -->
 <script src="js/reviews.js"></script>
 <script src="js/faq.js"></script>
 <script src="js/booking.js"></script>
+<script src="js/main.js"></script>            <!-- définit window.BRAND -->
 </body>
 </html>
