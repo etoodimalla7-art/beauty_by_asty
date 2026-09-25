@@ -20,8 +20,8 @@ async function loadGallery() {
   const { data, error } = await supabaseClient
     .from('media')
     .select('*')
-    .eq('brand', 'beauty')
-    .order('sort_order', { ascending: true })
+     .eq('brand', window.BRAND || 'beauty')
+     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
   if (error) { console.error('loadGallery', error); return; }
   window.allMedia = data || [];
