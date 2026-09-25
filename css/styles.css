@@ -306,29 +306,43 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
     padding-right: 1.25rem;
   }
    /* ---------- ADMIN : Brand selector ---------- */
+/* ============================================
+   ADMIN — Sélecteur de pôle (onglets)
+   ============================================ */
 .brand-tab {
-  padding: 10px 18px;
+  padding: 12px 24px;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   font-size: 0.7rem;
+  font-family: 'Jost', sans-serif;
   border: 1px solid transparent;
-  border-bottom: none;
+  border-bottom: 3px solid transparent;
   background: transparent;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #1C1410;
-  opacity: 0.6;
+  opacity: 0.5;
+  margin-right: 4px;
 }
-.brand-tab.active {
-  opacity: 1;
-  color: #B8895A;
-  border-color: #B8895A;
-  border-radius: 6px 6px 0 0;
-}
+
 .brand-tab:hover {
   opacity: 1;
   color: #B8895A;
+  border-bottom-color: #E8DDD0;
 }
+
+.brand-tab.active {
+  opacity: 1;
+  color: #B8895A;
+  border-bottom-color: #B8895A;
+  font-weight: 500;
+}
+
+/* Séparation visuelle entre les onglets */
+@media (min-width: 768px) {
+  .brand-tab {
+    padding: 12px 32px;
+  }
 }
 /* ============================================
    HERO ANIMÉ
