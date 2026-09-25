@@ -6,7 +6,11 @@ window.content = {
 };
 
 async function loadContent() {
-  const { data, error } = await supabaseClient.from('content').select('*');
+  const { data, error } = await supabaseClient
+    .from('content')
+    .select('*')
+    .eq('brand', 'beauty');
+   
   if (error) { console.error('loadContent', error); return; }
   (data || []).forEach(row => {
     window.content[row.key] = row.value;
