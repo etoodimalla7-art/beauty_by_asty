@@ -3,25 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Beauty by Asty — Beauté, Décoration & Création de Contenu à Abidjan</title>
-  <meta name="description" content="Beauty by Asty — Un groupe, trois univers : beauté, décoration d'intérieur et création de contenu à Abidjan. Découvrez nos maisons." />
-  <meta name="keywords" content="Beauty by Asty, beauté Abidjan, décoration intérieur Abidjan, création de contenu, maquillage, Côte d'Ivoire" />
-  <meta name="author" content="Beauty by Asty" />
+  <meta name="description" content="Beauty by Asty — Un groupe, trois univers : beauté, décoration d'intérieur et création de contenu à Abidjan." />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://beautybyasty.com/" />
-
+  <link rel="canonical" href="https://beauty-by-asty.onrender.com/" />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/2jTWrwmk/logo.png" />
-
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://beautybyasty.com/" />
   <meta property="og:title" content="Beauty by Asty — Beauté, Décoration & Création de Contenu" />
-  <meta property="og:description" content="Un groupe, trois univers : beauté, décoration d'intérieur, création de contenu." />
+  <meta property="og:description" content="Un groupe, trois univers : beauté, décoration, création de contenu." />
   <meta property="og:image" content="https://i.postimg.cc/2jTWrwmk/logo.png" />
-  <meta property="og:site_name" content="Beauty by Asty" />
-
   <meta name="theme-color" content="#1C1410" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -38,23 +29,6 @@
   </script>
   <link rel="stylesheet" href="css/styles.css" />
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Beauty by Asty",
-    "url": "https://beautybyasty.com/",
-    "logo": "https://i.postimg.cc/2jTWrwmk/logo.png",
-    "description": "Groupe multi-activités : beauté, décoration d'intérieur, création de contenu.",
-    "address": { "@type": "PostalAddress", "addressLocality": "Abidjan", "addressCountry": "CI" },
-    "sameAs": [
-      "https://instagram.com/beautybyasty",
-      "https://facebook.com/beautybyasty",
-      "https://tiktok.com/@beautybyasty"
-    ]
-  }
-  </script>
 </head>
 <body class="bg-alabaster text-espresso font-sans antialiased" data-brand="group">
 
@@ -63,11 +37,11 @@
     <nav class="max-w-[1400px] mx-auto px-5 md:px-10 py-4 md:py-5 flex items-center justify-between">
       <a href="index.html" class="font-serif text-lg md:text-2xl tracking-wide">Beauty by Asty</a>
       <ul class="hidden lg:flex items-center gap-8 text-sm tracking-widest uppercase">
-        <li><a href="#manifesto" class="nav-link" data-i18n="groupNav.manifesto">Manifeste</a></li>
-        <li><a href="#brands" class="nav-link" data-i18n="groupNav.brands">Univers</a></li>
-        <li><a href="#founder" class="nav-link" data-i18n="groupNav.founder">Fondatrice</a></li>
-        <li><a href="#testimonials" class="nav-link" data-i18n="groupNav.testimonials">Témoignages</a></li>
-        <li><a href="#contact" class="nav-link" data-i18n="groupNav.contact">Contact</a></li>
+        <li><a href="#manifesto" class="nav-link">Manifeste</a></li>
+        <li><a href="#brands" class="nav-link">Univers</a></li>
+        <li><a href="#founder" class="nav-link">Fondatrice</a></li>
+        <li><a href="#testimonials" class="nav-link">Témoignages</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
       <div class="flex items-center gap-4">
         <div class="lang-toggle flex items-center gap-2 text-xs tracking-widest">
@@ -75,24 +49,21 @@
           <span class="text-sand">·</span>
           <button data-lang="en" class="lang-btn">EN</button>
         </div>
-        <a href="#contact" class="hidden md:inline-block border border-espresso px-4 md:px-5 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition-colors duration-500" data-i18n="groupNav.cta">Nous contacter</a>
+        <a href="#contact" class="hidden md:inline-block border border-espresso px-4 md:px-5 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition-colors duration-500">Nous contacter</a>
         <button id="menuToggle" class="lg:hidden" aria-label="Menu">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
-            <line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/>
-          </svg>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
         </button>
       </div>
     </nav>
-
     <div id="mobileMenu" class="fixed inset-0 bg-alabaster z-40 hidden flex-col items-center justify-center gap-6 font-serif text-2xl md:text-3xl">
       <button id="menuClose" class="absolute top-6 right-6" aria-label="Close">
         <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
       </button>
-      <a href="#manifesto"    data-i18n="groupNav.manifesto">Manifeste</a>
-      <a href="#brands"       data-i18n="groupNav.brands">Univers</a>
-      <a href="#founder"      data-i18n="groupNav.founder">Fondatrice</a>
-      <a href="#testimonials" data-i18n="groupNav.testimonials">Témoignages</a>
-      <a href="#contact"      data-i18n="groupNav.contact">Contact</a>
+      <a href="#manifesto">Manifeste</a>
+      <a href="#brands">Univers</a>
+      <a href="#founder">Fondatrice</a>
+      <a href="#testimonials">Témoignages</a>
+      <a href="#contact">Contact</a>
     </div>
   </header>
 
@@ -102,29 +73,15 @@
       <img id="groupHeroBg" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=2000&q=85" alt="" class="w-full h-full object-cover animate-slow-zoom" />
       <div class="absolute inset-0 bg-gradient-to-t from-espresso/85 via-espresso/40 to-espresso/50"></div>
     </div>
-
     <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-10 w-full pt-32 pb-20 text-alabaster">
       <p id="groupHeroEyebrow" class="text-xs uppercase tracking-[0.5em] mb-6 md:mb-8 opacity-0 animate-fade-up-1">Beauty by Asty — Groupe</p>
-
-      <h1 id="groupHeroTitle" class="font-serif text-5xl sm:text-6xl md:text-8xl lg:text-9xl leading-[1.02] max-w-5xl opacity-0 animate-fade-up-2">
-        Trois univers.<br><em class="text-gold">Une signature.</em>
-      </h1>
-
-      <p id="groupHeroSubtitle" class="mt-8 md:mt-10 max-w-xl text-base md:text-lg font-light opacity-0 animate-fade-up-3 leading-relaxed">
-        Beauté, décoration et création de contenu — réunis sous une même exigence.
-      </p>
-
+      <h1 id="groupHeroTitle" class="font-serif text-5xl sm:text-6xl md:text-8xl lg:text-9xl leading-[1.02] max-w-5xl opacity-0 animate-fade-up-2">Trois univers. Une signature.</h1>
+      <p id="groupHeroSubtitle" class="mt-8 md:mt-10 max-w-xl text-base md:text-lg font-light opacity-0 animate-fade-up-3 leading-relaxed">Beauté, décoration et création de contenu.</p>
       <div class="mt-12 md:mt-16 flex flex-col sm:flex-row gap-3 sm:gap-4 opacity-0 animate-fade-up-4">
-        <a href="#brands" id="groupHeroCta1" class="bg-alabaster text-espresso px-8 py-4 text-xs uppercase tracking-widest text-center hover:bg-gold hover:text-alabaster transition-colors duration-500">
-          Découvrir nos univers
-        </a>
-        <a href="#founder" id="groupHeroCta2" class="border border-alabaster/60 text-alabaster px-8 py-4 text-xs uppercase tracking-widest text-center hover:bg-alabaster hover:text-espresso transition-colors duration-500">
-          Notre histoire
-        </a>
+        <a href="#brands" id="groupHeroCta1" class="bg-alabaster text-espresso px-8 py-4 text-xs uppercase tracking-widest text-center hover:bg-gold hover:text-alabaster transition-colors duration-500">Découvrir nos univers</a>
+        <a href="#founder" id="groupHeroCta2" class="border border-alabaster/60 text-alabaster px-8 py-4 text-xs uppercase tracking-widest text-center hover:bg-alabaster hover:text-espresso transition-colors duration-500">Notre histoire</a>
       </div>
     </div>
-
-    <!-- Scroll indicator -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 animate-fade-in-5">
       <div class="scroll-line w-px h-16 bg-alabaster/40 mx-auto"></div>
     </div>
@@ -140,15 +97,15 @@
   <!-- ============ MANIFESTE ============ -->
   <section id="manifesto" class="py-24 md:py-40">
     <div class="max-w-4xl mx-auto px-5 md:px-10 text-center">
-      <p id="groupManifestoTag" class="text-xs uppercase tracking-[0.4em] text-gold mb-8 md:mb-10 reveal" data-i18n="groupManifesto.tag">Manifeste</p>
-      <p id="groupManifestoText" class="font-serif text-2xl md:text-4xl lg:text-5xl leading-[1.3] italic text-espresso reveal"></p>
+      <p id="groupManifestoTag" class="text-xs uppercase tracking-[0.4em] text-gold mb-8 md:mb-10">Manifeste</p>
+      <p id="groupManifestoText" class="font-serif text-2xl md:text-4xl lg:text-5xl leading-[1.3] italic text-espresso"></p>
     </div>
   </section>
 
   <!-- ============ LES 3 UNIVERS ============ -->
   <section id="brands" class="py-20 md:py-32 bg-sand/40">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10">
-      <div class="text-center mb-16 md:mb-24 reveal">
+      <div class="text-center mb-16 md:mb-24">
         <p id="groupBrandsTag" class="text-xs uppercase tracking-[0.4em] text-gold mb-6">Nos Univers</p>
         <h2 id="groupBrandsTitle" class="font-serif text-4xl md:text-6xl">Explorez nos trois maisons.</h2>
       </div>
@@ -156,14 +113,14 @@
     </div>
   </section>
 
-  <!-- ============ KELLY — LA FONDATRICE ============ -->
+  <!-- ============ KELLY ============ -->
   <section id="founder" class="py-24 md:py-40">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10 grid md:grid-cols-5 gap-12 md:gap-20 items-center">
-      <div class="md:col-span-2 relative reveal">
+      <div class="md:col-span-2 relative">
         <img id="groupFounderImg" src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1200&q=85" alt="Kelly" class="w-full h-[480px] md:h-[640px] object-cover" />
         <div class="absolute -bottom-6 -left-6 border border-gold w-24 md:w-32 h-24 md:h-32 hidden md:block"></div>
       </div>
-      <div class="md:col-span-3 reveal">
+      <div class="md:col-span-3">
         <p id="groupFounderTag" class="text-xs uppercase tracking-[0.4em] text-gold mb-6">La Fondatrice</p>
         <h2 id="groupFounderTitle" class="font-serif text-4xl md:text-6xl leading-tight mb-10 md:mb-14"></h2>
         <blockquote id="groupFounderQuote" class="font-serif italic text-xl md:text-3xl leading-snug border-l-2 border-gold pl-6 md:pl-8 mb-10 md:mb-14"></blockquote>
@@ -172,25 +129,13 @@
     </div>
   </section>
 
-  <!-- ============ CHIFFRES CLÉS ============ -->
+  <!-- ============ CHIFFRES ============ -->
   <section class="py-20 md:py-32 bg-espresso text-alabaster">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10 grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6 text-center">
-      <div class="reveal">
-        <p class="font-serif text-5xl md:text-7xl text-gold mb-3">3</p>
-        <p class="text-xs uppercase tracking-[0.3em] text-alabaster/60" data-i18n="groupStats.universes">Univers</p>
-      </div>
-      <div class="reveal">
-        <p class="font-serif text-5xl md:text-7xl text-gold mb-3">5.0</p>
-        <p class="text-xs uppercase tracking-[0.3em] text-alabaster/60" data-i18n="groupStats.rating">Note moyenne</p>
-      </div>
-      <div class="reveal">
-        <p class="font-serif text-5xl md:text-7xl text-gold mb-3">Abidjan</p>
-        <p class="text-xs uppercase tracking-[0.3em] text-alabaster/60" data-i18n="groupStats.city">Côte d'Ivoire</p>
-      </div>
-      <div class="reveal">
-        <p class="font-serif text-5xl md:text-7xl text-gold mb-3">2024</p>
-        <p class="text-xs uppercase tracking-[0.3em] text-alabaster/60" data-i18n="groupStats.since">Depuis</p>
-      </div>
+      <div><p class="font-serif text-5xl md:text-7xl text-gold mb-3">3</p><p class="text-xs uppercase tracking-[0.3em] text-alabaster/60">Univers</p></div>
+      <div><p class="font-serif text-5xl md:text-7xl text-gold mb-3">5.0</p><p class="text-xs uppercase tracking-[0.3em] text-alabaster/60">Note moyenne</p></div>
+      <div><p class="font-serif text-5xl md:text-7xl text-gold mb-3">Abidjan</p><p class="text-xs uppercase tracking-[0.3em] text-alabaster/60">Côte d'Ivoire</p></div>
+      <div><p class="font-serif text-5xl md:text-7xl text-gold mb-3">2024</p><p class="text-xs uppercase tracking-[0.3em] text-alabaster/60">Depuis</p></div>
     </div>
   </section>
 
@@ -198,43 +143,23 @@
   <section id="testimonials" class="py-24 md:py-40">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10">
       <div class="text-center mb-12 md:mb-16">
-        <p class="text-xs uppercase tracking-[0.4em] text-gold mb-4 md:mb-6" data-i18n="groupReviews.tag">Témoignages</p>
-        <h2 class="font-serif text-4xl md:text-6xl" data-i18n="groupReviews.title">Ils nous font confiance</h2>
+        <p class="text-xs uppercase tracking-[0.4em] text-gold mb-4 md:mb-6">Témoignages</p>
+        <h2 class="font-serif text-4xl md:text-6xl">Ils nous font confiance</h2>
       </div>
-
-      <!-- Carousel wrapper -->
       <div class="relative">
         <div id="groupReviewsList" class="flex gap-6 md:gap-8 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"></div>
       </div>
-      <div id="groupReviewsEmpty" class="hidden text-center py-12 font-serif italic text-espresso/60 text-lg" data-i18n="groupReviews.empty">
-        Soyez le premier à partager votre expérience.
-      </div>
+      <div id="groupReviewsEmpty" class="hidden text-center py-12 font-serif italic text-espresso/60 text-lg">Soyez le premier à partager votre expérience.</div>
 
-      <!-- Formulaire d'avis -->
       <div class="max-w-2xl mx-auto mt-16 md:mt-20 p-6 md:p-12 border border-sand bg-alabaster">
-        <h3 class="font-serif text-2xl md:text-3xl mb-2 text-center" data-i18n="groupReviews.formTitle">Laissez votre témoignage</h3>
-        <p class="text-sm text-espresso/60 text-center mb-8 font-light" data-i18n="groupReviews.formSubtitle">Votre avis sera publié après validation.</p>
+        <h3 class="font-serif text-2xl md:text-3xl mb-2 text-center">Laissez votre témoignage</h3>
+        <p class="text-sm text-espresso/60 text-center mb-8 font-light">Votre avis sera publié après validation.</p>
         <form id="groupReviewForm" class="space-y-6">
-          <div class="field">
-            <label for="grv-name" data-i18n="groupReviews.name">Votre nom</label>
-            <input id="grv-name" type="text" required />
-          </div>
-          <div class="field">
-            <label data-i18n="groupReviews.rating">Note</label>
-            <div id="groupStarPicker" class="flex gap-2 md:gap-3 mt-2"></div>
-          </div>
-          <div class="field">
-            <label for="grv-message" data-i18n="groupReviews.message">Votre témoignage</label>
-            <textarea id="grv-message" rows="4" required></textarea>
-          </div>
-          <div class="text-center">
-            <button type="submit" class="btn-whatsapp">
-              <span data-i18n="groupReviews.submit">Envoyer mon témoignage</span>
-            </button>
-          </div>
-          <p id="groupReviewSuccess" class="hidden text-center font-serif italic text-gold" data-i18n="groupReviews.success">
-            Merci ! Votre témoignage sera publié après validation.
-          </p>
+          <div class="field"><label for="grv-name">Votre nom</label><input id="grv-name" type="text" required /></div>
+          <div class="field"><label>Note</label><div id="groupStarPicker" class="flex gap-2 md:gap-3 mt-2"></div></div>
+          <div class="field"><label for="grv-message">Votre témoignage</label><textarea id="grv-message" rows="4" required></textarea></div>
+          <div class="text-center"><button type="submit" class="btn-whatsapp"><span>Envoyer mon témoignage</span></button></div>
+          <p id="groupReviewSuccess" class="hidden text-center font-serif italic text-gold">Merci ! Votre témoignage sera publié après validation.</p>
         </form>
       </div>
     </div>
@@ -243,28 +168,26 @@
   <!-- ============ CTA FINAL ============ -->
   <section class="py-24 md:py-40 bg-sand/40">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10 text-center">
-      <p class="text-xs uppercase tracking-[0.4em] text-gold mb-6" data-i18n="groupCta.tag">Commençons</p>
-      <h2 class="font-serif text-4xl md:text-6xl mb-14 md:mb-20 max-w-3xl mx-auto" data-i18n="groupCta.title">
-        Choisissez votre univers.
-      </h2>
+      <p class="text-xs uppercase tracking-[0.4em] text-gold mb-6">Commençons</p>
+      <h2 class="font-serif text-4xl md:text-6xl mb-14 md:mb-20 max-w-3xl mx-auto">Choisissez votre univers.</h2>
       <div class="flex flex-col md:flex-row gap-4 md:gap-6 justify-center flex-wrap">
         <a href="beauty.html" class="border border-espresso px-8 py-5 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition-colors duration-500 inline-flex items-center justify-center gap-3">
-          <span data-i18n="groupCta.beauty">Découvrir BBA Beauty</span>
+          <span>Découvrir BBA Beauty</span>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
         </a>
         <a href="deco.html" class="border border-espresso px-8 py-5 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition-colors duration-500 inline-flex items-center justify-center gap-3">
-          <span data-i18n="groupCta.deco">Découvrir BBA Déco</span>
+          <span>Découvrir BBA Déco</span>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
         </a>
         <a href="studio.html" class="border border-espresso px-8 py-5 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition-colors duration-500 inline-flex items-center justify-center gap-3">
-          <span data-i18n="groupCta.studio">Découvrir BBA Studio</span>
+          <span>Découvrir BBA Studio</span>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
         </a>
       </div>
     </div>
   </section>
 
-  <!-- ============ CONTACT + FORMULAIRE ============ -->
+  <!-- ============ CONTACT ============ -->
   <section id="contact" class="py-24 md:py-40">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10 grid md:grid-cols-2 gap-12 md:gap-16">
       <div>
@@ -273,44 +196,27 @@
         <ul class="space-y-6">
           <li class="flex items-start gap-4">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mt-1 flex-shrink-0"><path d="M12 3a6.5 6.5 0 0 0-6.5 6.5c0 4.5 6.5 11.5 6.5 11.5s6.5-7 6.5-11.5A6.5 6.5 0 0 0 12 3z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-            <div><p class="text-xs uppercase tracking-widest text-espresso/50 mb-1" data-i18n="contact.address">Adresse</p><p id="groupContactAddress"></p></div>
+            <div><p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">Adresse</p><p id="groupContactAddress"></p></div>
           </li>
           <li class="flex items-start gap-4">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mt-1 flex-shrink-0"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1.1 1A16 16 0 0 1 4 5.1 1 1 0 0 1 5 4z"/></svg>
-            <div><p class="text-xs uppercase tracking-widest text-espresso/50 mb-1" data-i18n="contact.phone">Téléphone</p><a id="groupContactPhoneLink" class="hover:text-gold"><span id="groupContactPhone"></span></a></div>
+            <div><p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">Téléphone</p><a id="groupContactPhoneLink" class="hover:text-gold"><span id="groupContactPhone"></span></a></div>
           </li>
           <li class="flex items-start gap-4">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mt-1 flex-shrink-0"><path d="M4 6h16v12H4z"/><polyline points="4 6 12 13 20 6"/></svg>
-            <div><p class="text-xs uppercase tracking-widest text-espresso/50 mb-1" data-i18n="contact.email">Email</p><p id="groupContactEmail"></p></div>
+            <div><p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">Email</p><p id="groupContactEmail"></p></div>
           </li>
         </ul>
       </div>
-
       <div class="p-6 md:p-10 border border-sand bg-alabaster">
-        <p class="text-xs uppercase tracking-widest text-gold mb-6" data-i18n="groupContact.formTitle">Écrivez-nous</p>
+        <p class="text-xs uppercase tracking-widest text-gold mb-6">Écrivez-nous</p>
         <form id="groupContactForm" class="space-y-5">
-          <div class="field">
-            <label for="gc-name" data-i18n="groupContact.formName">Votre nom</label>
-            <input id="gc-name" type="text" required />
-          </div>
-          <div class="field">
-            <label for="gc-email" data-i18n="groupContact.formEmail">Votre email</label>
-            <input id="gc-email" type="email" required />
-          </div>
-          <div class="field">
-            <label for="gc-subject" data-i18n="groupContact.formSubject">Sujet</label>
-            <input id="gc-subject" type="text" />
-          </div>
-          <div class="field">
-            <label for="gc-message" data-i18n="groupContact.formMessage">Votre message</label>
-            <textarea id="gc-message" rows="4" required></textarea>
-          </div>
-          <button type="submit" class="btn-whatsapp w-full justify-center">
-            <span data-i18n="groupContact.formSubmit">Envoyer</span>
-          </button>
-          <p id="gc-success" class="hidden text-center font-serif italic text-gold" data-i18n="groupContact.formSuccess">
-            Merci ! Votre message a bien été envoyé.
-          </p>
+          <div class="field"><label for="gc-name">Votre nom</label><input id="gc-name" type="text" required /></div>
+          <div class="field"><label for="gc-email">Votre email</label><input id="gc-email" type="email" required /></div>
+          <div class="field"><label for="gc-subject">Sujet</label><input id="gc-subject" type="text" /></div>
+          <div class="field"><label for="gc-message">Votre message</label><textarea id="gc-message" rows="4" required></textarea></div>
+          <button type="submit" class="btn-whatsapp w-full justify-center"><span>Envoyer</span></button>
+          <p id="gc-success" class="hidden text-center font-serif italic text-gold">Merci ! Votre message a bien été envoyé.</p>
         </form>
       </div>
     </div>
@@ -324,18 +230,10 @@
           <p class="font-serif text-2xl md:text-3xl mb-4">Beauty by Asty</p>
           <p id="groupFooterTagline" class="text-sm font-light text-alabaster/70 leading-relaxed mb-6"></p>
           <div class="flex gap-3 md:gap-4">
-            <a href="https://instagram.com/beautybyasty" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>
-            </a>
-            <a href="https://facebook.com/beautybyasty" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v7h4v-7h3l1-4h-4V8z"/></svg>
-            </a>
-            <a href="https://tiktok.com/@beautybyasty" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v9.5a4.5 4.5 0 1 1-4.5-4.5"/><path d="M16 4c.3 2.8 2.4 5 5 5.3"/></svg>
-            </a>
-            <a href="https://wa.me/22578494430" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.7 7.4L3.5 20l1.2-4.2A8.5 8.5 0 1 1 20.5 11.5z"/><path d="M8.8 8.2c.2-.5.4-.6.7-.6h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3.1.5 0 .7l-.5.7c-.1.2-.2.3-.1.5.3.6 1.7 2 3.2 2.6.2.1.4.1.5-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.5.2.5.5.5.7 0 .3-.1.6-.5 1-.4.4-1.1.7-1.9.6-1.4-.2-3.2-1-4.7-2.5-1.3-1.3-2.2-2.9-2.4-4.3-.1-.6 0-1.4.6-1.8z"/></svg>
-            </a>
+            <a href="https://instagram.com/beautybyasty" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg></a>
+            <a href="https://facebook.com/beautybyasty" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v7h4v-7h3l1-4h-4V8z"/></svg></a>
+            <a href="https://tiktok.com/@beautybyasty" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v9.5a4.5 4.5 0 1 1-4.5-4.5"/><path d="M16 4c.3 2.8 2.4 5 5 5.3"/></svg></a>
+            <a href="https://wa.me/22578494430" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.7 7.4L3.5 20l1.2-4.2A8.5 8.5 0 1 1 20.5 11.5z"/><path d="M8.8 8.2c.2-.5.4-.6.7-.6h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3.1.5 0 .7l-.5.7c-.1.2-.2.3-.1.5.3.6 1.7 2 3.2 2.6.2.1.4.1.5-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.5.2.5.5.5.7 0 .3-.1.6-.5 1-.4.4-1.1.7-1.9.6-1.4-.2-3.2-1-4.7-2.5-1.3-1.3-2.2-2.9-2.4-4.3-.1-.6 0-1.4.6-1.8z"/></svg></a>
           </div>
         </div>
         <div>
@@ -372,14 +270,10 @@
     </div>
   </footer>
 
-<script src="js/supabase-config.js"></script>
-<script src="js/i18n.js"></script>            <!-- définit currentLang -->
-<script src="js/switcher.js"></script>
-<script src="js/content.js"></script>
-<script src="js/gallery.js"></script>         <!-- utilise currentLang -->
-<script src="js/reviews.js"></script>
-<script src="js/faq.js"></script>
-<script src="js/booking.js"></script>
-<script src="js/main.js"></script>            <!-- définit window.BRAND -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/switcher.js"></script>
+  <script src="js/group.js"></script>
+  <script src="js/main-group.js"></script>
 </body>
 </html>
