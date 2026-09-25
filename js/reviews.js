@@ -7,7 +7,9 @@ let selectedRating = 5;
 
 async function loadReviews() {
   const { data, error } = await supabaseClient
-    .from('reviews').select('*')
+    .from('reviews')
+    .select('*')
+    .eq('brand', 'beauty')
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
   if (error) { console.error('loadReviews', error); return; }
@@ -94,9 +96,10 @@ function initReviewForm() {
     submitBtn.disabled = true;
 
     // ✅ UNIQUEMENT dans Supabase → apparaît dans l'admin
-    const { error } = await supabaseClient.from('reviews').insert([{
-      name, rating: selectedRating, message, status: 'pending'
-    }]);
+ const { error } = await supabaseClient.from('reviews').insert([{
+   brand: 'beauty',
+   name, rating: selectedRating, message, status: 'pending'
+ }]);
 
     submitBtn.disabled = false;
     if (error) { console.error(error); alert('Erreur lors de l\'envoi.'); return; }
