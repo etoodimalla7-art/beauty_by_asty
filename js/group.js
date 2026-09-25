@@ -29,13 +29,12 @@ function renderGroupContent() {
     setText('groupHeroCta2', pick(g.group_hero, 'cta2'));
   }
 
-  /* ---------- MANIFESTE (utilise group_about.body1) ---------- */
+  /* ---------- MANIFESTE (utilise group_about) ---------- */
   if (g.group_about) {
     setText('groupManifestoTag', pick(g.group_about, 'tag') || 'Manifeste');
     const body = pick(g.group_about, 'body1');
     setText('groupManifestoText', body);
   } else {
-    // Fallback si group_about n'existe pas
     setText('groupManifestoText',
       currentLang === 'fr'
         ? "La beauté n'est pas un seul geste, c'est une manière d'être."
@@ -66,7 +65,7 @@ function renderGroupContent() {
     }
   }
 
-  /* ---------- FOUNDER ---------- */
+  /* ---------- FOUNDER (Kelly) ---------- */
   if (g.group_founder) {
     const img = document.getElementById('groupFounderImg');
     if (img && g.group_founder.photo_url) img.src = g.group_founder.photo_url;
@@ -85,10 +84,17 @@ function renderGroupContent() {
     setText('groupContactPhone', g.group_contact.phone);
     setText('groupContactEmail', g.group_contact.email);
     const phoneLink = document.getElementById('groupContactPhoneLink');
-    if (phoneLink && g.group_contact.phone) phoneLink.href = `tel:${g.group_contact.phone.replace(/\s/g,'')}`;
+    if (phoneLink && g.group_contact.phone) {
+      phoneLink.href = `tel:${g.group_contact.phone.replace(/\s/g,'')}`;
+    }
+    // Footer
     setText('groupFooterAddress', g.group_contact.address);
     setText('groupFooterPhone', g.group_contact.phone);
     setText('groupFooterEmail', g.group_contact.email);
+    const footerPhone = document.getElementById('groupFooterPhone');
+    if (footerPhone && g.group_contact.phone) footerPhone.href = `tel:${g.group_contact.phone.replace(/\s/g,'')}`;
+    const footerEmail = document.getElementById('groupFooterEmail');
+    if (footerEmail && g.group_contact.email) footerEmail.href = `mailto:${g.group_contact.email}`;
   }
 
   /* ---------- FOOTER ---------- */
@@ -100,7 +106,12 @@ function renderGroupContent() {
   /* ---------- REVEAL ---------- */
   document.querySelectorAll('.reveal').forEach(el => {
     const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
     }, { threshold: 0.15 });
     obs.observe(el);
   });
@@ -111,12 +122,14 @@ function setText(id, value) {
   if (el && value != null) el.textContent = value;
 }
 
-/* ---------- TÉMOIGNAGES ---------- */
+/* ---------- TÉMOIGNAGES GROUP ---------- */
 async function loadGroupReviews() {
   const { data, error } = await supabaseClient
-    .from('reviews').select('*').eq('brand', 'group').eq('status', 'approved')
+    .from('reviews').select('*')
+    .eq('brand', 'group')
+    .eq('status', 'approved')
     .order('created_at', { ascending: false });
-  if (error) { console.error(error); return; }
+  if (error) { console.error('loadGroupReviews', error); return; }
   window.groupReviews = data || [];
   renderGroupReviews();
 }
@@ -194,7 +207,11 @@ function initGroupReviewForm() {
     btn.disabled = true;
 
     const { error } = await supabaseClient.from('reviews').insert([{
-      brand: 'group', name, rating: groupSelectedRating, message, status: 'pending'
+      brand: 'group',
+      name,
+      rating: groupSelectedRating,
+      message,
+      status: 'pending'
     }]);
 
     btn.disabled = false;
@@ -230,7 +247,7 @@ function initGroupContactForm() {
       name: payload.name,
       phone: payload.email,
       service: payload.subject || 'Message de contact',
-      date: new Date().toISOString().slice(0,10),
+      date: new Date().toISOString().slice(0, 10),
       time: '00:00',
       location: '',
       message: payload.message,
@@ -246,6 +263,7 @@ function initGroupContactForm() {
   });
 }
 
+/* ---------- HELPERS ---------- */
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str ?? '';
