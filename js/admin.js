@@ -1,5 +1,5 @@
 /* ============================================
-   ADMIN — Contrôle total multi-pôles
+   ADMIN v2 — Contrôle total multi-pôles
    ============================================ */
 let session = null;
 let currentBrand = 'group';
@@ -12,18 +12,52 @@ let allMediaAdmin = [];
 let allBookingsAdmin = [];
 let allFaqAdmin = [];
 
-/* Champs connus : utilisés pour ordonner et décrire l'affichage */
+/* Détection bilingue : clés qui finissent par _fr ou _en */
+function isBilingualKey(key) { return key.endsWith('_fr') || key.endsWith('_en'); }
+function baseKey(key) { return key.replace(/_(fr|en)$/, ''); }
+
+/* Labels FR pour les champs techniques */
+const FIELD_LABELS = {
+  bg_url: 'Image de fond (URL)',
+  image_url: 'Image (URL)',
+  photo_url: 'Photo (URL)',
+  location_label: 'Localisation',
+  tag: 'Étiquette',
+  title: 'Titre',
+  subtitle: 'Sous-titre',
+  cta1: 'Bouton 1',
+  cta2: 'Bouton 2',
+  eyebrow: 'Sur-titre',
+  name: 'Nom',
+  quote: 'Citation',
+  bio: 'Biographie',
+  body1: 'Paragraphe 1',
+  body2: 'Paragraphe 2',
+  address: 'Adresse',
+  phone: 'Téléphone',
+  phone_wa: 'WhatsApp (chiffres uniquement)',
+  email: 'Email',
+  hours: 'Horaires',
+  map_embed: 'Google Maps Embed URL',
+  instagram: 'Instagram URL',
+  facebook: 'Facebook URL',
+  tiktok: 'TikTok URL',
+  tagline: 'Accroche',
+  made: 'Ligne "made in"',
+};
+
+/* Champs connus par bloc (dans l'ordre d'affichage) */
 const KNOWN_FIELDS = {
-  hero:  ['bg_url','location_label','title_fr','title_en','subtitle_fr','subtitle_en','cta1_fr','cta1_en','cta2_fr','cta2_en'],
-  about: ['image_url','tag_fr','tag_en','title_fr','title_en','body1_fr','body1_en','body2_fr','body2_en'],
-  contact: ['tag_fr','tag_en','title_fr','title_en','address','phone','phone_wa','email','hours','map_embed'],
+  hero: ['bg_url','location_label','title','subtitle','cta1','cta2'],
+  about: ['image_url','tag','title','body1','body2'],
+  contact: ['tag','title','address','phone','phone_wa','email','hours','map_embed'],
   socials: ['instagram','facebook','tiktok'],
-  footer: ['tagline_fr','tagline_en','made_fr','made_en'],
-  group_hero: ['bg_url','eyebrow_fr','eyebrow_en','title_fr','title_en','subtitle_fr','subtitle_en','cta1_fr','cta1_en','cta2_fr','cta2_en'],
-  group_about: ['image_url','tag_fr','tag_en','title_fr','title_en','body1_fr','body1_en','body2_fr','body2_en'],
-  group_founder: ['photo_url','tag_fr','tag_en','name','title_fr','title_en','quote_fr','quote_en','bio_fr','bio_en'],
-  group_contact: ['tag_fr','tag_en','title_fr','title_en','address','phone','phone_wa','email','map_embed'],
-  group_footer: ['tagline_fr','tagline_en','made_fr','made_en'],
+  footer: ['tagline','made'],
+  group_hero: ['bg_url','eyebrow','title','subtitle','cta1','cta2'],
+  group_about: ['image_url','tag','title','body1','body2'],
+  group_founder: ['photo_url','tag','name','title','quote','bio'],
+  group_contact: ['tag','title','address','phone','phone_wa','email','map_embed'],
+  group_footer: ['tagline','made'],
 };
 
 /* ============================
@@ -64,15 +98,10 @@ function initLogin() {
 
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-pass').value;
-
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    btn.disabled = false; btnText.textContent = 'Se connecter';
 
-    if (error) {
-      errEl.textContent = 'Identifiants incorrects.';
-      errEl.classList.remove('hidden');
-      return;
-    }
+    btn.disabled = false; btnText.textContent = 'Se connecter';
+    if (error) { errEl.textContent = 'Identifiants incorrects.'; errEl.classList.remove('hidden'); return; }
     session = data.session;
     toggleLoginUI();
   });
@@ -97,7 +126,6 @@ function initAccountModal() {
   document.getElementById('accountClose').addEventListener('click', close);
   modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
-  // Change password
   document.getElementById('passwordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const pwd = document.getElementById('newPassword').value;
@@ -123,7 +151,7 @@ function initAccountModal() {
 }
 
 /* ============================
-   NAVIGATION
+   NAV
    ============================ */
 function initNav() {
   document.querySelectorAll('.brand-tab').forEach(tab => {
@@ -131,6 +159,12 @@ function initNav() {
       document.querySelectorAll('.brand-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentBrand = tab.dataset.brandSelect;
+      // Met à jour le lien "Voir le site"
+      const link = document.getElementById('viewSiteLink');
+      if (link) {
+        const urls = { group: 'index.html', beauty: 'beauty.html', deco: 'deco.html', studio: 'studio.html' };
+        link.href = urls[currentBrand];
+      }
       loadEverything();
     });
   });
@@ -174,6 +208,7 @@ async function loadContentAdmin() {
     .from('content').select('*').eq('brand', currentBrand);
 
   if (error) { console.error(error); loading.textContent = 'Erreur : ' + error.message; return; }
+
   contentData = {};
   (data || []).forEach(row => contentData[row.key] = row.value);
 
@@ -187,13 +222,10 @@ async function loadContentAdmin() {
   list.querySelectorAll('form.content-form').forEach(form => {
     form.addEventListener('submit', (e) => saveContentForm(e, form));
   });
-
-  // Boutons "supprimer le bloc"
   list.querySelectorAll('.delete-block-btn').forEach(btn => {
     btn.addEventListener('click', () => deleteContentBlock(btn.dataset.key));
   });
 
-  // Éditeur services
   initServicesEditor();
 
   loading.classList.add('hidden');
@@ -201,39 +233,88 @@ async function loadContentAdmin() {
 }
 
 function renderContentForm(key, obj) {
-  // Cas particulier : services
   if (key === 'services') return renderServicesForm(key, obj);
 
-  // Détermine les champs à afficher
-  const knownKeys = KNOWN_FIELDS[key] || [];
-  const allKeys = Object.keys(obj).filter(k => {
+  // Détecte les champs bilingues
+  const bilingual = {}; // { base: { fr: 'x', en: 'y' } }
+  const commons = [];
+
+  Object.keys(obj).forEach(k => {
     const v = obj[k];
-    return !Array.isArray(v) && (typeof v !== 'object' || v === null);
+    if (Array.isArray(v) || (typeof v === 'object' && v !== null)) return;
+
+    if (isBilingualKey(k)) {
+      const b = baseKey(k);
+      bilingual[b] = bilingual[b] || {};
+      if (k.endsWith('_fr')) bilingual[b].fr = v;
+      else bilingual[b].en = v;
+    } else {
+      commons.push({ key: k, value: v });
+    }
   });
 
-  // Ordonne : champs connus d'abord, puis les autres
-  const orderedKeys = [
-    ...knownKeys.filter(k => allKeys.includes(k)),
-    ...allKeys.filter(k => !knownKeys.includes(k)),
+  // Détermine l'ordre des champs
+  const knownOrder = KNOWN_FIELDS[key] || [];
+  const orderedBases = [
+    ...knownOrder.filter(b => bilingual[b]),
+    ...Object.keys(bilingual).filter(b => !knownOrder.includes(b)),
   ];
 
-  const fields = orderedKeys.map(k => {
-    const val = obj[k];
-    const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const isLong = typeof val === 'string' && val.length > 60;
+  // Champs communs en haut
+  const commonsHTML = commons.map(({ key: k, value: v }) => {
+    const label = FIELD_LABELS[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const isLong = typeof v === 'string' && v.length > 60;
     const input = isLong
-      ? `<textarea name="${k}" rows="2">${escapeHtml(val)}</textarea>`
-      : `<input name="${k}" type="text" value="${escapeHtml(val)}" />`;
+      ? `<textarea name="${k}" rows="2">${escapeHtml(v)}</textarea>`
+      : `<input name="${k}" type="text" value="${escapeHtml(v)}" />`;
     return `<div class="field"><label>${label}</label>${input}</div>`;
+  }).join('');
+
+  // Champs bilingues côte à côte
+  const bilingualHTML = orderedBases.map(base => {
+    const label = FIELD_LABELS[base] || base.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const fr = bilingual[base].fr ?? '';
+    const en = bilingual[base].en ?? '';
+    const isLong = typeof fr === 'string' && fr.length > 60;
+
+    const frInput = isLong
+      ? `<textarea name="${base}_fr" rows="2">${escapeHtml(fr)}</textarea>`
+      : `<input name="${base}_fr" type="text" value="${escapeHtml(fr)}" />`;
+    const enInput = isLong
+      ? `<textarea name="${base}_en" rows="2">${escapeHtml(en)}</textarea>`
+      : `<input name="${base}_en" type="text" value="${escapeHtml(en)}" />`;
+
+    return `
+      <div class="bilingual-row">
+        <div class="field">
+          <label>${label} <span class="text-gold">🇫🇷 FR</span></label>
+          ${frInput}
+        </div>
+        <div class="field">
+          <label>${label} <span class="text-gold">🇬🇧 EN</span></label>
+          ${enInput}
+        </div>
+      </div>
+    `;
   }).join('');
 
   return `
     <form class="content-form border border-sand p-5 md:p-6" data-key="${key}">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <p class="text-xs uppercase tracking-widest text-espresso/50">${key}</p>
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-2 border-b border-sand pb-4">
+        <p class="text-sm uppercase tracking-widest text-gold font-medium">${key}</p>
         <button type="button" class="delete-block-btn text-xs uppercase tracking-widest text-terracotta hover:underline" data-key="${key}">Supprimer ce bloc</button>
       </div>
-      <div class="grid md:grid-cols-2 gap-5">${fields}</div>
+
+      ${commons.length ? `
+        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Champs communs</p>
+        <div class="grid md:grid-cols-2 gap-5 mb-8">${commonsHTML}</div>
+      ` : ''}
+
+      ${orderedBases.length ? `
+        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Champs bilingues (FR / EN)</p>
+        <div class="space-y-5">${bilingualHTML}</div>
+      ` : ''}
+
       <button type="submit" class="btn-whatsapp mt-6">Enregistrer</button>
       <p class="text-sm text-gold mt-3 save-status"></p>
     </form>
@@ -244,17 +325,28 @@ function renderServicesForm(key, obj) {
   const items = obj.items || [];
   const itemsHTML = items.map((it, i) => serviceItemHTML(it, i)).join('');
 
-  const metaFields = ['tag_fr', 'tag_en', 'title_fr', 'title_en'].map(k => `
-    <div class="field"><label>${k}</label><input name="${k}" value="${escapeHtml(obj[k] || '')}" /></div>
+  const metaFrHTML = ['tag','title'].map(k => `
+    <div class="field"><label>${FIELD_LABELS[k] || k} 🇫🇷 FR</label><input name="${k}_fr" value="${escapeHtml(obj[k + '_fr'] || '')}" /></div>
+  `).join('');
+  const metaEnHTML = ['tag','title'].map(k => `
+    <div class="field"><label>${FIELD_LABELS[k] || k} 🇬🇧 EN</label><input name="${k}_en" value="${escapeHtml(obj[k + '_en'] || '')}" /></div>
   `).join('');
 
   return `
     <form class="content-form border border-sand p-5 md:p-6" data-key="${key}" id="servicesForm">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <p class="text-xs uppercase tracking-widest text-espresso/50">${key}</p>
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-2 border-b border-sand pb-4">
+        <p class="text-sm uppercase tracking-widest text-gold font-medium">${key}</p>
         <button type="button" class="delete-block-btn text-xs uppercase tracking-widest text-terracotta hover:underline" data-key="${key}">Supprimer ce bloc</button>
       </div>
-      <div class="grid md:grid-cols-2 gap-5 mb-8">${metaFields}</div>
+
+      <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Titre du bloc</p>
+      <div class="bilingual-row mb-8">
+        ${metaFrHTML}
+      </div>
+      <div class="bilingual-row mb-8">
+        ${metaEnHTML}
+      </div>
+
       <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Liste des services</p>
       <div id="servicesListAdmin" class="space-y-4">${itemsHTML}</div>
       <button type="button" id="addServiceBtn" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest mt-4 hover:bg-espresso hover:text-alabaster transition">+ Ajouter un service</button>
@@ -268,13 +360,14 @@ function serviceItemHTML(it, i) {
   return `
     <div class="border border-sand p-4 relative" data-idx="${i}">
       <button type="button" class="absolute top-3 right-3 text-terracotta text-xs uppercase tracking-widest remove-service">Supprimer</button>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="field"><label>Numéro</label><input class="svc-num" value="${escapeHtml(it.num || '')}" /></div>
-        <div class="field"></div>
-        <div class="field"><label>Titre FR</label><input class="svc-title-fr" value="${escapeHtml(it.title_fr || '')}" /></div>
-        <div class="field"><label>Titre EN</label><input class="svc-title-en" value="${escapeHtml(it.title_en || '')}" /></div>
-        <div class="field"><label>Description FR</label><textarea class="svc-desc-fr" rows="2">${escapeHtml(it.desc_fr || '')}</textarea></div>
-        <div class="field"><label>Description EN</label><textarea class="svc-desc-en" rows="2">${escapeHtml(it.desc_en || '')}</textarea></div>
+      <div class="field mb-3"><label>Numéro</label><input class="svc-num" value="${escapeHtml(it.num || '')}" /></div>
+      <div class="bilingual-row mb-3">
+        <div class="field"><label>Titre 🇫🇷 FR</label><input class="svc-title-fr" value="${escapeHtml(it.title_fr || '')}" /></div>
+        <div class="field"><label>Title 🇬🇧 EN</label><input class="svc-title-en" value="${escapeHtml(it.title_en || '')}" /></div>
+      </div>
+      <div class="bilingual-row">
+        <div class="field"><label>Description 🇫🇷 FR</label><textarea class="svc-desc-fr" rows="2">${escapeHtml(it.desc_fr || '')}</textarea></div>
+        <div class="field"><label>Description 🇬🇧 EN</label><textarea class="svc-desc-en" rows="2">${escapeHtml(it.desc_en || '')}</textarea></div>
       </div>
     </div>
   `;
@@ -355,33 +448,37 @@ async function saveContentForm(e, form) {
 }
 
 async function deleteContentBlock(key) {
-  if (!confirm(`Supprimer définitivement le bloc "${key}" ? Cette action est irréversible.`)) return;
+  if (!confirm(`Supprimer définitivement le bloc "${key}" ?`)) return;
   await supabaseClient.from('content').delete().eq('key', key).eq('brand', currentBrand);
   loadContentAdmin();
 }
 
-/* ============================
-   AJOUT DE BLOC DE CONTENU
-   ============================ */
 function initAddContent() {
   document.getElementById('addContentBtn').addEventListener('click', async () => {
-    const key = prompt('Nom du nouveau bloc (ex: tarifs, événements, section_promo) :');
+    const key = prompt('Nom du nouveau bloc (ex: tarifs, événements) :');
     if (!key || !key.trim()) return;
     const cleanKey = key.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
 
-    // Vérifie si existe déjà
     if (contentData[cleanKey]) { alert('Ce bloc existe déjà.'); return; }
 
-    // Demande les champs (optionnel)
     const fieldsStr = prompt(
-      'Champs du bloc (séparés par des virgules) :\n\nExemple : title_fr, title_en, body_fr, body_en, image_url',
-      'title_fr, title_en, body_fr, body_en'
+      'Champs du bloc (séparés par virgule, sans _fr/_en) :\n\n' +
+      'Exemple : title, subtitle, body1, image_url',
+      'title, body, image_url'
     );
     if (fieldsStr === null) return;
 
-    const fields = fieldsStr.split(',').map(f => f.trim()).filter(Boolean);
+    const bases = fieldsStr.split(',').map(f => f.trim()).filter(Boolean);
     const value = {};
-    fields.forEach(f => value[f] = '');
+    bases.forEach(base => {
+      // Chaque champ aura une version FR + EN sauf si URL/image
+      if (base.includes('url') || base === 'name') {
+        value[base] = '';
+      } else {
+        value[base + '_fr'] = '';
+        value[base + '_en'] = '';
+      }
+    });
 
     const { error } = await supabaseClient.from('content').insert([{
       key: cleanKey, brand: currentBrand, value
@@ -413,8 +510,9 @@ async function loadGalleryAdmin() {
         ? `<img src="${m.url}" class="w-full h-40 object-cover" />`
         : `<video src="${m.url}" class="w-full h-40 object-cover" muted></video>`}
       <div class="p-3">
-        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">${escapeHtml(m.tag || '—')}</p>
-        <p class="font-serif italic text-sm mb-3">${escapeHtml(m.caption || '')}</p>
+        <p class="text-xs uppercase tracking-widest text-espresso/50 mb-1">${escapeHtml(m.tag_fr || m.tag || '—')}</p>
+        <p class="font-serif italic text-sm mb-1">${escapeHtml(m.caption_fr || m.caption || '')}</p>
+        <p class="font-serif italic text-xs text-espresso/50 mb-3">${escapeHtml(m.caption_en || '')}</p>
         <div class="flex gap-2">
           <button onclick="editMedia('${m.id}')" class="text-xs uppercase tracking-widest text-espresso hover:underline">Modifier</button>
           <button onclick="deleteMedia('${m.id}', '${m.url}')" class="text-xs uppercase tracking-widest text-terracotta hover:underline">Supprimer</button>
@@ -435,9 +533,18 @@ async function deleteMedia(id, url) {
 async function editMedia(id) {
   const { data } = await supabaseClient.from('media').select('*').eq('id', id).single();
   if (!data) return;
-  const caption = prompt('Légende :', data.caption || ''); if (caption === null) return;
-  const tag = prompt('Tag :', data.tag || ''); if (tag === null) return;
-  await supabaseClient.from('media').update({ caption: caption.trim(), tag: tag.trim().toLowerCase() }).eq('id', id);
+
+  const captionFr = prompt('Légende FR :', data.caption_fr || data.caption || ''); if (captionFr === null) return;
+  const captionEn = prompt('Caption EN :', data.caption_en || ''); if (captionEn === null) return;
+  const tagFr = prompt('Tag FR :', data.tag_fr || data.tag || ''); if (tagFr === null) return;
+  const tagEn = prompt('Tag EN :', data.tag_en || ''); if (tagEn === null) return;
+
+  await supabaseClient.from('media').update({
+    caption_fr: captionFr.trim(),
+    caption_en: captionEn.trim(),
+    tag_fr: tagFr.trim().toLowerCase(),
+    tag_en: tagEn.trim().toLowerCase(),
+  }).eq('id', id);
   loadGalleryAdmin();
 }
 
@@ -454,8 +561,10 @@ function initMediaUpload() {
   document.getElementById('mediaAddBtn').addEventListener('click', async () => {
     const type = document.getElementById('mediaType').value;
     const file = document.getElementById('mediaFile').files[0];
-    const caption = document.getElementById('mediaCaption').value.trim();
-    const tag = document.getElementById('mediaTag').value.trim().toLowerCase();
+    const captionFr = document.getElementById('mediaCaptionFr').value.trim();
+    const captionEn = document.getElementById('mediaCaptionEn').value.trim();
+    const tagFr = document.getElementById('mediaTagFr').value.trim().toLowerCase();
+    const tagEn = document.getElementById('mediaTagEn').value.trim().toLowerCase();
     const progress = document.getElementById('mediaProgress');
 
     if (!file) return alert('Choisissez un fichier.');
@@ -465,14 +574,20 @@ function initMediaUpload() {
     if (!url) { progress.textContent = '❌ Erreur upload'; return; }
 
     const { error } = await supabaseClient.from('media').insert([{
-      brand: currentBrand, type, url, caption, tag
+      brand: currentBrand, type, url,
+      caption_fr: captionFr, caption_en: captionEn,
+      tag_fr: tagFr, tag_en: tagEn,
+      caption: captionFr,  // compat ancienne version
+      tag: tagFr
     }]);
     if (error) { progress.textContent = '❌ ' + error.message; return; }
 
     progress.textContent = '✅ Upload réussi !';
     document.getElementById('mediaFile').value = '';
-    document.getElementById('mediaCaption').value = '';
-    document.getElementById('mediaTag').value = '';
+    document.getElementById('mediaCaptionFr').value = '';
+    document.getElementById('mediaCaptionEn').value = '';
+    document.getElementById('mediaTagFr').value = '';
+    document.getElementById('mediaTagEn').value = '';
     setTimeout(() => progress.textContent = '', 3000);
     loadGalleryAdmin();
   });
@@ -641,10 +756,10 @@ async function loadFaqAdmin() {
   }
   list.innerHTML = allFaqAdmin.map(f => `
     <div class="border border-sand p-4 md:p-6">
-      <p class="font-serif text-base md:text-lg mb-1">🇫🇷 ${escapeHtml(f.question_fr)}</p>
-      <p class="text-sm text-espresso/70 mb-3">${escapeHtml(f.answer_fr)}</p>
-      <p class="font-serif text-base md:text-lg mb-1">🇬🇧 ${escapeHtml(f.question_en)}</p>
-      <p class="text-sm text-espresso/70 mb-4">${escapeHtml(f.answer_en)}</p>
+      <div class="bilingual-row mb-4">
+        <div><p class="font-serif text-base md:text-lg mb-1">🇫🇷 ${escapeHtml(f.question_fr)}</p><p class="text-sm text-espresso/70">${escapeHtml(f.answer_fr)}</p></div>
+        <div><p class="font-serif text-base md:text-lg mb-1">🇬🇧 ${escapeHtml(f.question_en)}</p><p class="text-sm text-espresso/70">${escapeHtml(f.answer_en)}</p></div>
+      </div>
       <div class="flex gap-2">
         <button onclick="editFaq('${f.id}')" class="text-xs uppercase tracking-widest text-espresso hover:underline">Modifier</button>
         <button onclick="deleteFaq('${f.id}')" class="text-xs uppercase tracking-widest text-terracotta hover:underline">Supprimer</button>
