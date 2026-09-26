@@ -226,6 +226,7 @@ function initGroupReviewForm() {
 }
 
 /* ---------- FORM CONTACT GROUP ---------- */
+/* ---------- FORM CONTACT GROUP ---------- */
 function initGroupContactForm() {
   const form = document.getElementById('groupContactForm');
   if (!form) return;
@@ -235,23 +236,24 @@ function initGroupContactForm() {
     btn.disabled = true;
 
     const payload = {
-      brand: 'group',
-      name: document.getElementById('gc-name').value.trim(),
-      email: document.getElementById('gc-email').value.trim(),
+      name:    document.getElementById('gc-name').value.trim(),
+      phone:   document.getElementById('gc-phone').value.trim(),
+      email:   document.getElementById('gc-email').value.trim(),
       subject: document.getElementById('gc-subject').value.trim(),
       message: document.getElementById('gc-message').value.trim(),
     };
 
+    // 1. Enregistre dans la table bookings (brand = group, status = 'message')
     const { error } = await supabaseClient.from('bookings').insert([{
-      brand: 'group',
-      name: payload.name,
-      phone: payload.email,
-      service: payload.subject || 'Message de contact',
-      date: new Date().toISOString().slice(0, 10),
-      time: '00:00',
-      location: '',
-      message: payload.message,
-      status: 'new'
+      brand:    'group',
+      name:     payload.name,
+      phone:    payload.phone,        // ✅ Vrai téléphone
+      service:  payload.subject || 'Message de contact',
+      date:     new Date().toISOString().slice(0, 10),
+      time:     '00:00',
+      location: payload.email,        // ✅ L'email est stocké dans "location" pour le contact
+      message:  payload.message,
+      status:   'message'             // ✅ Nouveau statut "message" (différent de 'new')
     }]);
 
     btn.disabled = false;
