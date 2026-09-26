@@ -836,3 +836,192 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
   color: #FAF7F2;
   border-color: #B8895A;
 }
+
+/* ============================================
+   PAGES REÇU + MES RÉSERVATIONS
+   ============================================ */
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    padding: 0 2.5rem;
+  }
+}
+
+.receipt-card {
+  background: #FAF7F2;
+  border: 1px solid #E8DDD0;
+  padding: 2rem 1.5rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .receipt-card {
+    padding: 3rem 2.5rem;
+  }
+}
+
+.receipt-header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #E8DDD0;
+  margin-bottom: 1.5rem;
+}
+
+.receipt-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin: 0 auto 1rem;
+}
+
+.receipt-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: #1C1410;
+}
+
+.receipt-id-box {
+  text-align: center;
+  padding: 1rem;
+  background: #1C1410;
+  color: #FAF7F2;
+  margin-bottom: 2rem;
+}
+
+.receipt-id-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #B8895A;
+  margin-bottom: 0.5rem;
+}
+
+.receipt-id-value {
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+.receipt-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .receipt-details {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.receipt-field-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(28, 20, 16, 0.5);
+  margin-bottom: 0.35rem;
+}
+
+.receipt-field-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  color: #1C1410;
+  line-height: 1.3;
+}
+
+.receipt-message-block {
+  background: #E8DDD0;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.receipt-cta {
+  background: #1C1410;
+  color: #FAF7F2;
+  padding: 1.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.receipt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .receipt-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* Mes réservations */
+.booking-list-item {
+  border: 1px solid #E8DDD0;
+  background: #FAF7F2;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.booking-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.booking-list-item-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #B8895A;
+  letter-spacing: 0.1em;
+}
+
+.booking-list-item-date {
+  font-size: 0.8rem;
+  color: rgba(28, 20, 16, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.booking-list-item-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 640px) {
+  .booking-list-item-details {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Impression */
+@media print {
+  body {
+    background: white;
+  }
+  header, footer, .no-print {
+    display: none !important;
+  }
+  .receipt-card {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+}
