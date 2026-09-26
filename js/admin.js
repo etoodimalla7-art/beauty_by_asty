@@ -223,15 +223,12 @@ async function loadContentAdmin() {
 
   list.innerHTML = Object.keys(contentData).map(key => renderContentForm(key, contentData[key])).join('');
 
-  // Attache les submit
   list.querySelectorAll('form.content-form').forEach(form => {
     form.addEventListener('submit', (e) => saveContentForm(e, form));
   });
-  // Supprimer bloc
   list.querySelectorAll('.delete-block-btn').forEach(btn => {
     btn.addEventListener('click', () => deleteContentBlock(btn.dataset.key));
   });
-  // Upload d'images
   list.querySelectorAll('.img-file-input').forEach(fileInput => {
     fileInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
@@ -285,7 +282,6 @@ function renderContentForm(key, obj) {
     ...Object.keys(bilingual).filter(b => !knownOrder.includes(b)),
   ];
 
-  /* Champs communs — avec upload si champ image */
   const commonsHTML = commons.map(({ key: k, value: v }) => {
     const label = FIELD_LABELS[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
@@ -313,7 +309,6 @@ function renderContentForm(key, obj) {
     return `<div class="field"><label>${label}</label>${input}</div>`;
   }).join('');
 
-  /* Champs bilingues */
   const bilingualHTML = orderedBases.map(base => {
     const label = FIELD_LABELS[base] || base.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const fr = bilingual[base].fr ?? '';
@@ -471,7 +466,6 @@ async function saveContentForm(e, form) {
   } else {
     value = {};
     form.querySelectorAll('[name]').forEach(field => { value[field.name] = field.value; });
-    // Préserve les objets/arrays non affichés
     const original = contentData[key] || {};
     Object.keys(original).forEach(k => {
       if (Array.isArray(original[k]) || (typeof original[k] === 'object' && original[k] !== null)) {
@@ -738,7 +732,8 @@ function initReviewFilters() {
 }
 
 /* ============================
-   BOOKINGS
+   BOOKINGS — Affichage corrigé
+   Téléphone, Email, et type de message
    ============================ */
 async function loadBookingsAdmin() {
   const { data, error } = await supabaseClient
@@ -752,28 +747,96 @@ async function loadBookingsAdmin() {
     list.innerHTML = `<p class="text-center font-serif italic text-espresso/60 py-12">Aucune réservation.</p>`;
     return;
   }
-  list.innerHTML = allBookingsAdmin.map(b => `
-    <div class="border border-sand p-4 md:p-6 flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
-      <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-        <div><span class="text-espresso/50 text-xs uppercase tracking-widest">Nom</span><br>${escapeHtml(b.name)}</div>
-        <div><span class="text-espresso/50 text-xs uppercase tracking-widest">Téléphone</span><br>${escapeHtml(b.phone)}</div>
-        <div><span class="text-espresso/50 text-xs uppercase tracking-widest">Prestation</span><br>${escapeHtml(b.service)}</div>
-        <div><span class="text-espresso/50 text-xs uppercase tracking-widest">Date</span><br>${b.date} à ${b.time}</div>
-        <div><span class="text-espresso/50 text-xs uppercase tracking-widest">Lieu</span><br>${escapeHtml(b.location || '—')}</div>
-        <div><span class="text-espresso/50 text-xs uppercase tracking-widest">Reçue le</span><br>${new Date(b.created_at).toLocaleDateString('fr-FR')}</div>
-        ${b.message ? `<div class="sm:col-span-2 lg:col-span-3"><span class="text-espresso/50 text-xs uppercase tracking-widest">Message</span><br>${escapeHtml(b.message)}</div>` : ''}
+
+  list.innerHTML = allBookingsAdmin.map(b => {
+    // Détection : message de contact vs réservation
+    const isMessage = b.status === 'message';
+
+    // Sécurité : s'assurer que phone et email sont bien distincts
+    const phone = b.phone || '';
+    const email = (b.location && b.location.includes('@')) ? b.location : '';
+
+    // Lien WhatsApp
+    const waNumber = phone.replace(/\D/g, '');
+    const waLink = waNumber ? `https://wa.me/${waNumber}` : '#';
+
+    return `
+      <div class="border border-sand p-4 md:p-6 flex flex-col lg:flex-row lg:items-start gap-4 justify-between">
+        <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+
+          <div>
+            <span class="text-espresso/50 text-xs uppercase tracking-widest">Nom</span><br>
+            <span class="font-serif text-base">${escapeHtml(b.name)}</span>
+          </div>
+
+          <div>
+            <span class="text-espresso/50 text-xs uppercase tracking-widest">Téléphone</span><br>
+            ${phone
+              ? `<a href="tel:${phone.replace(/\s/g,'')}" class="hover:text-gold transition">${escapeHtml(phone)}</a>`
+              : '<span class="text-espresso/40">—</span>'}
+          </div>
+
+          <div>
+            <span class="text-espresso/50 text-xs uppercase tracking-widest">Email</span><br>
+            ${email
+              ? `<a href="mailto:${escapeHtml(email)}" class="hover:text-gold transition break-all">${escapeHtml(email)}</a>`
+              : '<span class="text-espresso/40">—</span>'}
+          </div>
+
+          <div>
+            <span class="text-espresso/50 text-xs uppercase tracking-widest">${isMessage ? 'Sujet' : 'Prestation'}</span><br>
+            ${escapeHtml(b.service)}
+          </div>
+
+          <div>
+            <span class="text-espresso/50 text-xs uppercase tracking-widest">Date</span><br>
+            ${b.date} à ${b.time}
+          </div>
+
+          <div>
+            <span class="text-espresso/50 text-xs uppercase tracking-widest">Reçue le</span><br>
+            ${new Date(b.created_at).toLocaleDateString('fr-FR')}
+          </div>
+
+          ${b.message ? `
+            <div class="sm:col-span-2 lg:col-span-3 mt-2 pt-3 border-t border-sand">
+              <span class="text-espresso/50 text-xs uppercase tracking-widest">Message</span><br>
+              <p class="font-light mt-1">${escapeHtml(b.message)}</p>
+            </div>
+          ` : ''}
+
+          <div class="sm:col-span-2 lg:col-span-3">
+            <span class="status-badge ${isMessage ? 'status-new' : 'status-pending'}">
+              ${isMessage ? 'Message de contact' : 'Réservation'}
+            </span>
+          </div>
+
+        </div>
+
+        <div class="flex flex-col gap-2 lg:min-w-[180px]">
+          ${waNumber ? `
+            <a href="${waLink}" target="_blank" rel="noopener"
+               class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition whitespace-nowrap text-center">
+              Répondre WhatsApp
+            </a>
+          ` : ''}
+          ${email ? `
+            <a href="mailto:${escapeHtml(email)}"
+               class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition whitespace-nowrap text-center">
+              Répondre Email
+            </a>
+          ` : ''}
+          <button onclick="deleteBooking('${b.id}')" class="px-4 py-2 text-xs uppercase tracking-widest text-terracotta hover:underline">
+            Supprimer
+          </button>
+        </div>
       </div>
-      <div class="flex flex-col gap-2">
-        <a href="https://wa.me/${b.phone.replace(/\D/g, '')}" target="_blank" rel="noopener"
-           class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition whitespace-nowrap text-center">Répondre WhatsApp</a>
-        <button onclick="deleteBooking('${b.id}')" class="px-4 py-2 text-xs uppercase tracking-widest text-terracotta hover:underline">Supprimer</button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 async function deleteBooking(id) {
-  if (!confirm('Supprimer cette réservation ?')) return;
+  if (!confirm('Supprimer cette entrée ?')) return;
   await supabaseClient.from('bookings').delete().eq('id', id);
   loadBookingsAdmin();
 }
