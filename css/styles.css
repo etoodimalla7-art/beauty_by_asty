@@ -1025,3 +1025,287 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
     margin: 0;
   }
 }
+
+/* ============================================
+   ASTY — Assistante virtuelle
+   ============================================ */
+
+/* Bouton flottant */
+#astyBubble {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: #1C1410;
+  color: #FAF7F2;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+#astyBubble:hover {
+  transform: translateY(-3px);
+  background: #B8895A;
+  box-shadow: 0 8px 32px rgba(184, 137, 90, 0.35);
+}
+
+#astyBubble.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
+}
+
+.asty-bubble-label {
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  #astyBubble {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px 16px;
+  }
+  .asty-bubble-label {
+    display: none;
+  }
+}
+
+/* Panel de chat */
+.asty-panel {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  z-index: 1000;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  height: 600px;
+  max-height: calc(100vh - 120px);
+  background: #FAF7F2;
+  border: 1px solid #E8DDD0;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Jost', sans-serif;
+}
+
+.asty-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .asty-panel {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border: none;
+  }
+}
+
+/* Header */
+.asty-header {
+  padding: 16px 20px;
+  background: #1C1410;
+  color: #FAF7F2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.asty-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.asty-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #B8895A;
+  color: #FAF7F2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.asty-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.asty-status {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(250, 247, 242, 0.6);
+  margin: 2px 0 0;
+}
+
+.asty-close {
+  background: none;
+  border: none;
+  color: #FAF7F2;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.asty-close:hover {
+  opacity: 1;
+}
+
+/* Messages */
+.asty-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #FAF7F2;
+}
+
+.asty-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.asty-messages::-webkit-scrollbar-thumb {
+  background: #E8DDD0;
+  border-radius: 3px;
+}
+
+.asty-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  animation: astySlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes astySlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.asty-msg-asty {
+  align-self: flex-start;
+}
+
+.asty-msg-user {
+  align-self: flex-end;
+}
+
+.asty-msg-bubble {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.asty-msg-asty .asty-msg-bubble {
+  background: #E8DDD0;
+  color: #1C1410;
+}
+
+.asty-msg-user .asty-msg-bubble {
+  background: #1C1410;
+  color: #FAF7F2;
+}
+
+/* Options (boutons cliquables) */
+.asty-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.asty-option-btn {
+  background: #FAF7F2;
+  border: 1px solid #E8DDD0;
+  padding: 10px 14px;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  color: #1C1410;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.asty-option-btn:hover {
+  background: #1C1410;
+  color: #FAF7F2;
+  border-color: #1C1410;
+}
+
+/* Input */
+.asty-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  background: #FAF7F2;
+  border: 1px solid #E8DDD0;
+  margin-top: 8px;
+  animation: astySlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.asty-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 10px 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  background: transparent;
+  color: #1C1410;
+}
+
+.asty-send {
+  background: #1C1410;
+  color: #FAF7F2;
+  border: none;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.asty-send:hover {
+  background: #B8895A;
+}
