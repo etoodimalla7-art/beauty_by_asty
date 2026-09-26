@@ -319,6 +319,30 @@
           </svg>
           <span>Télécharger mon reçu (PDF)</span>
         </button>
+
+        <!-- ✅ NOUVEAU : Bloc lien permanent -->
+        <div id="permanentLinkBlock" class="hidden mt-6 pt-6 border-t border-sand">
+          <p class="text-xs uppercase tracking-widest text-espresso/50 mb-3">
+            Ou gardez le lien pour plus tard
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input
+              id="permanentLinkInput"
+              type="text"
+              readonly
+              class="flex-1 bg-sand/40 border border-sand px-3 py-2 text-xs text-espresso/70 font-mono"
+            />
+            <button id="copyLinkBtn" type="button" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition whitespace-nowrap">
+              <span>Copier</span>
+            </button>
+          </div>
+          <button id="waReceiptBtn" type="button" class="mt-3 w-full border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition inline-flex items-center justify-center gap-2">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.5 11.5a8.5 8.5 0 0 1-12.7 7.4L3.5 20l1.2-4.2A8.5 8.5 0 1 1 20.5 11.5z"/>
+            </svg>
+            <span>Envoyer le reçu sur WhatsApp</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -376,6 +400,8 @@
             </a>
           </div>
         </div>
+
+        <!-- ✅ Navigation avec lien "Mes réservations" -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6" data-i18n="footer.nav">Navigation</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
@@ -383,8 +409,10 @@
             <li><a href="beauty.html" class="hover:text-gold transition" data-i18n="switcher.beauty">Beauty</a></li>
             <li><a href="deco.html" class="hover:text-gold transition" data-i18n="switcher.deco">Déco</a></li>
             <li><a href="studio.html" class="hover:text-gold transition" data-i18n="switcher.studio">Studio</a></li>
+            <li><a href="mes-reservations.html" class="hover:text-gold transition">Mes réservations</a></li>
           </ul>
         </div>
+
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6">Nos services</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
@@ -394,6 +422,8 @@
             <li>Contenu réseaux</li>
           </ul>
         </div>
+
+        <!-- ✅ Footer Contact corrigé (adresse/tél/email cliquables) -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6" data-i18n="footer.contact">Contact</p>
           <ul class="space-y-4 text-sm font-light text-alabaster/80">
@@ -408,7 +438,7 @@
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0" aria-hidden="true">
                 <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1.1 1A16 16 0 0 1 4 5.1 1 1 0 0 1 5 4z"/>
               </svg>
-              <a id="footerPhoneLink" href="#" class="hover:text-gold transition" aria-label="Appeler Beauty by Asty Studio"><span id="footerPhone"></span></a>
+              <a id="footerPhone" href="#" class="hover:text-gold transition" aria-label="Appeler Beauty by Asty Studio"></a>
             </li>
             <li class="flex items-start gap-3">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0" aria-hidden="true">
@@ -420,6 +450,7 @@
           </ul>
         </div>
       </div>
+
       <div class="border-t border-alabaster/15 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-xs uppercase tracking-widest text-alabaster/50">
         <p>© 2026 Beauty by Asty Studio</p>
         <div class="flex flex-wrap gap-4 md:gap-6 justify-center">
