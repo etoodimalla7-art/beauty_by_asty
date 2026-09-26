@@ -21,12 +21,28 @@ async function searchBookings(phone) {
     return { error: 'Numéro de téléphone invalide.' };
   }
 
-  // Cherche toutes les réservations avec ce numéro (formats multiples)
-  const { data, error } = await supabaseClient
+  // Cherche d'abord avec le numéro exact
+  let { data, error } = await supabaseClient
     .from('bookings')
     .select('*')
-    .or(`phone.ilike.%${cleanPhone}%,phone.ilike.%${phone}%`)
+    .eq('phone', phone)
     .order('created_at', { ascending: false });
+
+  // Si rien trouvé, essaie avec le format sans espaces
+  if (!data || data.length === 0) {
+    const result = await supabaseClient
+      .from('bookings')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (result.data) {
+      // Filtre côté client : compare les chiffres uniquement
+      data = result.data.filter(b => 
+        normalizePhone(b.phone) === cleanPhone
+      );
+      error = result.error;
+    }
+  }
 
   if (error) {
     console.error(error);
