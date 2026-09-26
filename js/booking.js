@@ -27,6 +27,8 @@ function buildWhatsAppMessage(data) {
   return encodeURIComponent(lines.join('\n'));
 }
 
+
+
 function initBookingForm() {
   const form = document.getElementById('bookingForm');
   if (!form) return;
@@ -52,16 +54,21 @@ function initBookingForm() {
     // 1. Génère un ID de reçu unique
     const receiptId = generateReceiptId(window.BRAND || 'beauty');
 
-    // 2. Sauvegarde dans Supabase
+    // 2. Sauvegarde dans Supabase (avec receipt_id)
     const { error } = await supabaseClient
       .from('bookings')
-      .insert([{ ...data, brand: window.BRAND || 'beauty', receipt_id: receiptId }]);
+      .insert([{
+        ...data,
+        brand: window.BRAND || 'beauty',
+        receipt_id: receiptId
+      }]);
 
     if (error) console.error('booking save', error);
 
-    // 3. Ouvre WhatsApp (comme avant)
+    // 3. Ouvre WhatsApp avec le message principal
     const wa = SITE_CONFIG.whatsappNumber;
-    window.open(`https://wa.me/${wa}?text=${buildWhatsAppMessage(data)}`, '_blank');
+    const whatsappMessage = buildWhatsAppMessage(data);
+    window.open(`https://wa.me/${wa}?text=${whatsappMessage}`, '_blank');
 
     // 4. Message succès
     const success = document.getElementById('bk-success');
@@ -73,12 +80,52 @@ function initBookingForm() {
     if (receiptBlock) {
       receiptBlock.classList.remove('hidden');
 
+      // Construit l'URL permanente du reçu
+      const receiptUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}recu.html?id=${encodeURIComponent(receiptId)}`;
+
+      // === NOUVEAU : affiche le lien permanent du reçu ===
+      const permanentLinkBlock = document.getElementById('permanentLinkBlock');
+      const permanentLinkInput = document.getElementById('permanentLinkInput');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      const waReceiptBtn = document.getElementById('waReceiptBtn');
+
+      if (permanentLinkBlock && permanentLinkInput) {
+        permanentLinkInput.value = receiptUrl;
+        permanentLinkBlock.classList.remove('hidden');
+      }
+
+      // Bouton "Copier le lien"
+      if (copyLinkBtn) {
+        copyLinkBtn.onclick = () => {
+          navigator.clipboard.writeText(receiptUrl).then(() => {
+            const originalText = copyLinkBtn.querySelector('span').textContent;
+            copyLinkBtn.querySelector('span').textContent = '✅ Copié !';
+            setTimeout(() => {
+              copyLinkBtn.querySelector('span').textContent = originalText;
+            }, 2000);
+          });
+        };
+      }
+
+      // Bouton "Envoyer le reçu sur WhatsApp"
+      if (waReceiptBtn) {
+        waReceiptBtn.onclick = () => {
+          const isFR = currentLang === 'fr';
+          const receiptMessage = isFR
+            ? `📄 *Reçu de réservation Beauty by Asty*\n\nNuméro : *${receiptId}*\n\nRetrouvez mon reçu ici :\n${receiptUrl}`
+            : `📄 *Beauty by Asty Reservation Receipt*\n\nNumber: *${receiptId}*\n\nFind my receipt here:\n${receiptUrl}`;
+          window.open(`https://wa.me/${wa}?text=${encodeURIComponent(receiptMessage)}`, '_blank');
+        };
+      }
+
       // Stocke les données du reçu
       const receiptData = { ...data, receiptId };
 
-      // Bouton de téléchargement
-      const btn = document.getElementById('downloadReceiptBtn');
-      btn.onclick = () => generateReceiptPDF(receiptData, window.BRAND || 'beauty');
+      // Bouton de téléchargement direct du PDF
+      const downloadBtn = document.getElementById('downloadReceiptBtn');
+      if (downloadBtn) {
+        downloadBtn.onclick = () => generateReceiptPDF(receiptData, window.BRAND || 'beauty');
+      }
 
       // Scroll vers le bloc
       receiptBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
