@@ -725,3 +725,114 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 .skip-link:focus {
   top: 0;
 }
+
+/* ============================================
+   BANDEAU COOKIES
+   ============================================ */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #1C1410;
+  color: #FAF7F2;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+}
+.cookie-banner.visible {
+  transform: translateY(0);
+}
+
+.cookie-banner-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+@media (min-width: 768px) {
+  .cookie-banner-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+}
+
+.cookie-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(250, 247, 242, 0.85);
+  max-width: 720px;
+}
+
+.cookie-link {
+  color: #B8895A;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.3s ease;
+}
+.cookie-link:hover {
+  opacity: 0.75;
+}
+
+.cookie-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .cookie-actions {
+    width: auto;
+  }
+}
+
+.cookie-btn {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  flex: 1;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .cookie-btn {
+    flex: none;
+    padding: 12px 28px;
+  }
+}
+
+.cookie-btn-outline {
+  background: transparent;
+  color: #FAF7F2;
+  border-color: rgba(250, 247, 242, 0.3);
+}
+.cookie-btn-outline:hover {
+  background: rgba(250, 247, 242, 0.1);
+  border-color: rgba(250, 247, 242, 0.6);
+}
+
+.cookie-btn-fill {
+  background: #FAF7F2;
+  color: #1C1410;
+  border-color: #FAF7F2;
+}
+.cookie-btn-fill:hover {
+  background: #B8895A;
+  color: #FAF7F2;
+  border-color: #B8895A;
+}
