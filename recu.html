@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Mon reçu — Beauty by Asty</title>
+  <meta name="description" content="Consultez et téléchargez votre reçu de réservation Beauty by Asty." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/hGjxFhk9/f4c7dd9c-a888-401e-bdf4-98204fceed03.png" />
+  <meta name="theme-color" content="#1C1410" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        alabaster:'#FAF7F2', espresso:'#1C1410', gold:'#B8895A',
+        terracotta:'#8B4A3B', sand:'#E8DDD0'
+      }, fontFamily: {
+        serif:['"Cormorant Garamond"','serif'], sans:['Jost','sans-serif']
+      }}}
+    }
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-alabaster text-espresso font-sans antialiased">
+
+  <!-- NAVBAR SIMPLE -->
+  <header class="border-b border-sand">
+    <nav class="max-w-[1400px] mx-auto px-5 md:px-10 py-4 md:py-5 flex items-center justify-between">
+      <a href="index.html" class="font-serif text-lg md:text-2xl tracking-wide">Beauty by Asty</a>
+      <a href="index.html" class="text-xs uppercase tracking-widest hover:text-gold transition">← Retour à l'accueil</a>
+    </nav>
+  </header>
+
+  <!-- CONTENU -->
+  <main class="page-container py-10 md:py-20">
+
+    <!-- CHARGEMENT -->
+    <div id="receiptLoading" class="text-center py-20">
+      <p class="font-serif italic text-xl text-espresso/60">Chargement de votre reçu…</p>
+    </div>
+
+    <!-- ERREUR -->
+    <div id="receiptError" class="hidden text-center py-20">
+      <div class="max-w-md mx-auto">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-6">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h1 class="font-serif text-3xl mb-4">Reçu introuvable</h1>
+        <p class="text-espresso/70 font-light mb-8">
+          Ce reçu n'existe pas ou a été supprimé. Vérifiez le lien ou contactez-nous sur WhatsApp.
+        </p>
+        <a href="index.html" class="btn-whatsapp inline-flex">
+          <span>Retour à l'accueil</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- REÇU -->
+    <div id="receiptContent" class="hidden">
+
+      <!-- En-tête -->
+      <div class="receipt-header">
+        <img id="receiptBrandLogo" src="" alt="" class="receipt-logo" />
+        <h1 id="receiptBrandName" class="receipt-title">Beauty by Asty</h1>
+        <p id="receiptBrandSub" class="text-xs uppercase tracking-[0.3em] text-gold"></p>
+      </div>
+
+      <!-- Titre -->
+      <div class="text-center mb-8">
+        <p class="text-xs uppercase tracking-[0.4em] text-gold mb-3">Reçu de réservation</p>
+        <h2 class="font-serif text-3xl md:text-4xl italic">Votre réservation est confirmée</h2>
+      </div>
+
+      <!-- ID du reçu -->
+      <div class="receipt-id-box">
+        <p class="receipt-id-label">Numéro de reçu</p>
+        <p id="receiptId" class="receipt-id-value">—</p>
+      </div>
+
+      <!-- Détails -->
+      <div class="receipt-card">
+        <div class="receipt-details">
+          <div>
+            <p class="receipt-field-label">Client</p>
+            <p id="receiptClientName" class="receipt-field-value">—</p>
+          </div>
+          <div>
+            <p class="receipt-field-label">Téléphone</p>
+            <p id="receiptClientPhone" class="receipt-field-value">—</p>
+          </div>
+          <div>
+            <p class="receipt-field-label">Prestation</p>
+            <p id="receiptService" class="receipt-field-value">—</p>
+          </div>
+          <div>
+            <p class="receipt-field-label">Date</p>
+            <p id="receiptDate" class="receipt-field-value">—</p>
+          </div>
+          <div>
+            <p class="receipt-field-label">Heure</p>
+            <p id="receiptTime" class="receipt-field-value">—</p>
+          </div>
+          <div>
+            <p class="receipt-field-label">Lieu</p>
+            <p id="receiptLocation" class="receipt-field-value">—</p>
+          </div>
+        </div>
+
+        <!-- Message (si présent) -->
+        <div id="receiptMessageBlock" class="hidden receipt-message-block">
+          <p class="receipt-field-label mb-2">Message</p>
+          <p id="receiptMessage" class="font-serif italic text-espresso/80"></p>
+        </div>
+      </div>
+
+      <!-- CTA "À présenter à l'accueil" -->
+      <div class="receipt-cta">
+        <p class="text-xs uppercase tracking-[0.3em] text-gold mb-2">À présenter à l'accueil</p>
+        <p class="font-serif italic text-lg">
+          Ce reçu atteste de votre réservation. Merci de le présenter à votre arrivée.
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="receipt-actions no-print">
+        <button id="receiptDownloadBtn" type="button" class="btn-whatsapp">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Télécharger en PDF</span>
+        </button>
+        <button id="receiptPrintBtn" type="button" class="border border-espresso px-8 py-4 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition-colors duration-500 inline-flex items-center justify-center gap-3">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          <span>Imprimer</span>
+        </button>
+      </div>
+
+      <!-- Pied de page -->
+      <div class="mt-12 pt-6 border-t border-sand text-center text-xs text-espresso/50 uppercase tracking-widest">
+        <p>Beauty by Asty — Cocody, Abidjan, Côte d'Ivoire</p>
+        <p class="mt-1">+225 98 38 65 99 · beautybyasty@gmail.com</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-sand py-6 text-center text-xs text-espresso/50 uppercase tracking-widest">
+    <p>© 2026 Beauty by Asty</p>
+  </footer>
+
+  <script src="js/supabase-config.js"></script>
+  <script src="js/receipt.js"></script>
+  <script src="js/receipt-page.js"></script>
+</body>
+</html>
