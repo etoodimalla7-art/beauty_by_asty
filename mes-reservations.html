@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Mes réservations — Beauty by Asty</title>
+  <meta name="description" content="Retrouvez toutes vos réservations Beauty by Asty." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/hGjxFhk9/f4c7dd9c-a888-401e-bdf4-98204fceed03.png" />
+  <meta name="theme-color" content="#1C1410" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        alabaster:'#FAF7F2', espresso:'#1C1410', gold:'#B8895A',
+        terracotta:'#8B4A3B', sand:'#E8DDD0'
+      }, fontFamily: {
+        serif:['"Cormorant Garamond"','serif'], sans:['Jost','sans-serif']
+      }}}
+    }
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-alabaster text-espresso font-sans antialiased">
+
+  <!-- NAVBAR SIMPLE -->
+  <header class="border-b border-sand">
+    <nav class="max-w-[1400px] mx-auto px-5 md:px-10 py-4 md:py-5 flex items-center justify-between">
+      <a href="index.html" class="font-serif text-lg md:text-2xl tracking-wide">Beauty by Asty</a>
+      <a href="index.html" class="text-xs uppercase tracking-widest hover:text-gold transition">← Retour à l'accueil</a>
+    </nav>
+  </header>
+
+  <!-- CONTENU -->
+  <main class="page-container py-10 md:py-20">
+
+    <div class="text-center mb-12">
+      <p class="text-xs uppercase tracking-[0.4em] text-gold mb-4">Espace client</p>
+      <h1 class="font-serif text-4xl md:text-6xl mb-6">Mes réservations</h1>
+      <p class="text-espresso/70 font-light max-w-xl mx-auto">
+        Entrez votre numéro de téléphone pour retrouver toutes vos réservations et télécharger vos reçus.
+      </p>
+    </div>
+
+    <!-- ÉTAPE 1 : saisie du téléphone -->
+    <div id="stepPhone" class="max-w-md mx-auto">
+      <div class="receipt-card">
+        <form id="phoneForm" class="space-y-5">
+          <div class="field">
+            <label for="clientPhone">Votre numéro de téléphone</label>
+            <input
+              id="clientPhone"
+              type="tel"
+              required
+              placeholder="+225 07 XX XX XX XX"
+              autocomplete="tel"
+            />
+          </div>
+          <button type="submit" class="btn-whatsapp w-full justify-center">
+            <span>Retrouver mes réservations</span>
+          </button>
+          <p id="phoneError" class="hidden text-center text-sm text-terracotta"></p>
+        </form>
+
+        <p class="text-xs text-espresso/50 text-center mt-6 leading-relaxed">
+          Astuce : utilisez le même numéro que celui renseigné lors de votre réservation.
+        </p>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : résultats -->
+    <div id="stepResults" class="hidden">
+      <div class="text-center mb-8">
+        <button id="changePhoneBtn" class="text-xs uppercase tracking-widest text-gold hover:underline">
+          ← Changer de numéro
+        </button>
+      </div>
+
+      <div id="bookingsList"></div>
+
+      <div id="noBookings" class="hidden text-center py-12">
+        <p class="font-serif italic text-xl text-espresso/60 mb-6">
+          Aucune réservation trouvée pour ce numéro.
+        </p>
+        <p class="text-espresso/60 mb-8 font-light">
+          Vous n'avez pas encore réservé ? Découvrez nos maisons et réservez votre première séance.
+        </p>
+        <div class="flex flex-wrap gap-3 justify-center">
+          <a href="beauty.html" class="border border-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">Beauté</a>
+          <a href="deco.html" class="border border-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">Déco</a>
+          <a href="studio.html" class="border border-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">Studio</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 : chargement -->
+    <div id="stepLoading" class="hidden text-center py-20">
+      <p class="font-serif italic text-xl text-espresso/60">Recherche de vos réservations…</p>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-sand py-6 text-center text-xs text-espresso/50 uppercase tracking-widest">
+    <p>© 2026 Beauty by Asty</p>
+  </footer>
+
+  <script src="js/supabase-config.js"></script>
+  <script src="js/my-bookings.js"></script>
+</body>
+</html>
