@@ -1,5 +1,5 @@
 /* ============================================
-   ADMIN v3 — Contrôle total multi-pôles + upload
+   ADMIN v3 — Contrôle total multi-pôles + upload + Salon
    ============================================ */
 let session = null;
 let currentBrand = 'group';
@@ -11,6 +11,8 @@ let allReviewsAdmin = [];
 let allMediaAdmin = [];
 let allBookingsAdmin = [];
 let allFaqAdmin = [];
+let allSalonBlocks = [];
+let salonAdminBrand = 'group';
 
 /* Détection bilingue */
 function isBilingualKey(key) { return key.endsWith('_fr') || key.endsWith('_en'); }
@@ -180,6 +182,11 @@ function initNav() {
       tab.classList.add('active');
       currentTab = tab.dataset.tab;
       document.getElementById(`tab-${currentTab}`).classList.remove('hidden');
+
+      // ✅ Chargement automatique du Salon quand on clique sur l'onglet
+      if (currentTab === 'salon') {
+        loadSalonAdmin();
+      }
     });
   });
 }
@@ -732,8 +739,7 @@ function initReviewFilters() {
 }
 
 /* ============================
-   BOOKINGS — Affichage corrigé
-   Téléphone, Email, et type de message
+   BOOKINGS
    ============================ */
 async function loadBookingsAdmin() {
   const { data, error } = await supabaseClient
@@ -749,14 +755,9 @@ async function loadBookingsAdmin() {
   }
 
   list.innerHTML = allBookingsAdmin.map(b => {
-    // Détection : message de contact vs réservation
     const isMessage = b.status === 'message';
-
-    // Sécurité : s'assurer que phone et email sont bien distincts
     const phone = b.phone || '';
     const email = (b.location && b.location.includes('@')) ? b.location : '';
-
-    // Lien WhatsApp
     const waNumber = phone.replace(/\D/g, '');
     const waLink = waNumber ? `https://wa.me/${waNumber}` : '#';
 
@@ -905,6 +906,149 @@ function initFaqAdd() {
 }
 
 /* ============================
+   SALON PRIVÉ
+   ============================ */
+async function loadSalonAdmin() {
+  const { data, error } = await supabaseClient
+    .from('salon_blocks')
+    .select('*')
+    .eq('brand', salonAdminBrand)
+    .order('sort_order', { ascending: true });
+
+  if (error) { console.error(error); return; }
+  allSalonBlocks = data || [];
+  renderSalonAdmin();
+}
+
+function renderSalonAdmin() {
+  const list = document.getElementById('salonAdminList');
+  if (!list) return;
+
+  if (allSalonBlocks.length === 0) {
+    list.innerHTML = `<p class="text-center font-serif italic text-espresso/60 py-12">Aucun bloc. Cliquez sur "+ Ajouter un bloc".</p>`;
+    return;
+  }
+
+  list.innerHTML = allSalonBlocks.map(block => `
+    <div class="border border-sand p-4 md:p-6">
+      <div class="flex items-start justify-between gap-4 flex-wrap mb-4">
+        <div>
+          <p class="text-xs uppercase tracking-widest text-gold mb-2">${escapeHtml(block.type)}</p>
+          <p class="font-serif text-lg">${escapeHtml(block.title_fr || '—')}</p>
+          <p class="text-sm text-espresso/60 mt-1">${escapeHtml(block.title_en || '—')}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="status-badge ${block.status === 'visible' ? 'status-approved' : 'status-pending'}">
+            ${block.status === 'visible' ? 'Visible' : block.status === 'draft' ? 'Brouillon' : 'Archivé'}
+          </span>
+          <span class="status-badge status-new">${escapeHtml(block.min_tier || 'guest')}</span>
+        </div>
+      </div>
+
+      ${block.content_fr ? `<p class="text-sm font-light mb-2">${escapeHtml(block.content_fr.substring(0, 120))}${block.content_fr.length > 120 ? '…' : ''}</p>` : ''}
+      ${block.media_url ? `<p class="text-xs text-espresso/50 font-mono mb-4 truncate">${escapeHtml(block.media_url)}</p>` : ''}
+
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="editSalonBlock('${block.id}')" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">Modifier</button>
+        <button onclick="toggleSalonBlockStatus('${block.id}', '${block.status}')" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+          ${block.status === 'visible' ? 'Masquer' : 'Publier'}
+        </button>
+        <button onclick="deleteSalonBlock('${block.id}')" class="px-4 py-2 text-xs uppercase tracking-widest text-terracotta hover:underline">Supprimer</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function initSalonAdmin() {
+  // Filtres par maison
+  document.querySelectorAll('.salon-admin-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.salon-admin-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      salonAdminBrand = btn.dataset.brand;
+      loadSalonAdmin();
+    });
+  });
+
+  // Bouton Ajouter
+  const addBtn = document.getElementById('addSalonBlockBtn');
+  if (addBtn) {
+    addBtn.addEventListener('click', addSalonBlock);
+  }
+}
+
+async function addSalonBlock() {
+  const types = ['video', 'offer', 'article', 'gallery', 'text', 'tour3d'];
+  const typeChoice = prompt(
+    `Type de bloc :\n\n${types.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\nEntrez le numéro :`,
+    '1'
+  );
+  if (!typeChoice) return;
+  const typeIndex = parseInt(typeChoice, 10) - 1;
+  if (typeIndex < 0 || typeIndex >= types.length) return;
+  const selectedType = types[typeIndex];
+
+  const titleFr = prompt('Titre (FR) :', '');
+  if (titleFr === null) return;
+  const titleEn = prompt('Titre (EN) :', '') || '';
+  const contentFr = prompt('Description (FR) :', '') || '';
+  const contentEn = prompt('Description (EN) :', '') || '';
+  const mediaUrl = prompt('URL du média (YouTube embed, image, etc.) :', '') || '';
+  const minTier = prompt('Tier minimum (guest / client / vip) :', 'guest') || 'guest';
+
+  const { error } = await supabaseClient.from('salon_blocks').insert([{
+    brand: salonAdminBrand,
+    type: selectedType,
+    title_fr: titleFr,
+    title_en: titleEn,
+    content_fr: contentFr,
+    content_en: contentEn,
+    media_url: mediaUrl,
+    min_tier: minTier,
+    status: 'visible',
+    sort_order: allSalonBlocks.length + 1
+  }]);
+
+  if (error) { alert('Erreur : ' + error.message); return; }
+  loadSalonAdmin();
+}
+
+async function editSalonBlock(id) {
+  const block = allSalonBlocks.find(b => b.id === id);
+  if (!block) return;
+
+  const titleFr = prompt('Titre (FR) :', block.title_fr || '');
+  if (titleFr === null) return;
+  const titleEn = prompt('Titre (EN) :', block.title_en || '') || '';
+  const contentFr = prompt('Description (FR) :', block.content_fr || '') || '';
+  const contentEn = prompt('Description (EN) :', block.content_en || '') || '';
+  const mediaUrl = prompt('URL du média :', block.media_url || '') || '';
+  const minTier = prompt('Tier minimum (guest / client / vip) :', block.min_tier || 'guest') || 'guest';
+
+  await supabaseClient.from('salon_blocks').update({
+    title_fr: titleFr,
+    title_en: titleEn,
+    content_fr: contentFr,
+    content_en: contentEn,
+    media_url: mediaUrl,
+    min_tier: minTier
+  }).eq('id', id);
+  loadSalonAdmin();
+}
+
+async function toggleSalonBlockStatus(id, currentStatus) {
+  const newStatus = currentStatus === 'visible' ? 'draft' : 'visible';
+  await supabaseClient.from('salon_blocks').update({ status: newStatus }).eq('id', id);
+  loadSalonAdmin();
+}
+
+async function deleteSalonBlock(id) {
+  if (!confirm('Supprimer ce bloc définitivement ?')) return;
+  await supabaseClient.from('salon_blocks').delete().eq('id', id);
+  loadSalonAdmin();
+}
+
+/* ============================
    HELPERS
    ============================ */
 function escapeHtml(str) {
@@ -925,5 +1069,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMediaUpload();
   initFaqAdd();
   initAddContent();
+  initSalonAdmin();
   await checkSession();
 });
