@@ -20,7 +20,6 @@
   </script>
   <link rel="stylesheet" href="css/styles.css" />
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <!-- jsPDF pour générer les reçus -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     if (window.top !== window.self) { window.top.location = window.self.location; }
@@ -74,12 +73,14 @@
         </div>
       </div>
 
-     <nav class="max-w-[1500px] mx-auto px-4 md:px-6 pt-2 flex gap-1 border-t border-sand overflow-x-auto">
+      <!-- Brand selector -->
+      <nav class="max-w-[1500px] mx-auto px-4 md:px-6 pt-2 flex gap-1 border-t border-sand overflow-x-auto">
         <button class="brand-tab active whitespace-nowrap" data-brand-select="group">Groupe</button>
         <button class="brand-tab whitespace-nowrap" data-brand-select="beauty">Beauty</button>
         <button class="brand-tab whitespace-nowrap" data-brand-select="deco">Déco</button>
         <button class="brand-tab whitespace-nowrap" data-brand-select="studio">Studio</button>
-    </nav>
+      </nav>
+
       <!-- Section tabs -->
       <nav class="max-w-[1500px] mx-auto px-4 md:px-6 flex gap-1 border-t border-sand overflow-x-auto">
         <button class="admin-tab active whitespace-nowrap" data-tab="content">Contenu</button>
@@ -87,7 +88,7 @@
         <button class="admin-tab whitespace-nowrap" data-tab="reviews">Avis</button>
         <button class="admin-tab whitespace-nowrap" data-tab="bookings">Réservations</button>
         <button class="admin-tab whitespace-nowrap" data-tab="faq">FAQ</button>
-        <button class="admin-tab whitespace-nowrap" data-tab="salon">Salon Privé</button>  <!-- ✅ NOUVEAU -->
+        <button class="admin-tab whitespace-nowrap" data-tab="salon">Salon Privé</button>
       </nav>
     </header>
 
@@ -192,6 +193,29 @@
         </div>
         <div id="faqAdminList" class="space-y-4"></div>
       </section>
+
+      <!-- SALON PRIVÉ -->
+      <section id="tab-salon" class="tab-panel hidden">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8">
+          <h2 class="font-serif text-2xl md:text-3xl">Salon Privé</h2>
+          <button id="addSalonBlockBtn" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+            + Ajouter un bloc
+          </button>
+        </div>
+
+        <div class="border border-sand p-5 md:p-6 mb-10 max-w-3xl">
+          <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Filtrer par maison</p>
+          <div class="flex flex-wrap gap-2" id="salonBrandFilters">
+            <button class="salon-admin-filter active text-xs uppercase tracking-widest border border-sand px-3 py-2" data-brand="group">Groupe</button>
+            <button class="salon-admin-filter text-xs uppercase tracking-widest border border-sand px-3 py-2" data-brand="beauty">Beauty</button>
+            <button class="salon-admin-filter text-xs uppercase tracking-widest border border-sand px-3 py-2" data-brand="deco">Déco</button>
+            <button class="salon-admin-filter text-xs uppercase tracking-widest border border-sand px-3 py-2" data-brand="studio">Studio</button>
+          </div>
+        </div>
+
+        <div id="salonAdminList" class="space-y-4"></div>
+      </section>
+
     </main>
   </div>
 
