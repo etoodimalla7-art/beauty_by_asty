@@ -329,7 +329,7 @@
           <span>Télécharger mon reçu (PDF)</span>
         </button>
 
-        <!-- ✅ NOUVEAU : Bloc lien permanent -->
+        <!-- Bloc lien permanent -->
         <div id="permanentLinkBlock" class="hidden mt-6 pt-6 border-t border-sand">
           <p class="text-xs uppercase tracking-widest text-espresso/50 mb-3">
             Ou gardez le lien pour plus tard
@@ -390,7 +390,11 @@
   <!-- ============ FOOTER ============ -->
   <footer class="bg-espresso text-alabaster pt-16 md:pt-20 pb-8 md:pb-10">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10">
+
+      <!-- ===== Bloc principal : 4 colonnes ===== -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12 md:mb-16">
+
+        <!-- Colonne 1 : Marque + réseaux -->
         <div>
           <p class="font-serif text-2xl md:text-3xl mb-4">Beauty by Asty</p>
           <p id="footerTagline" class="text-sm font-light text-alabaster/70 leading-relaxed mb-6"></p>
@@ -410,7 +414,7 @@
           </div>
         </div>
 
-        <!-- ✅ Navigation avec lien "Mes réservations" -->
+        <!-- Colonne 2 : Navigation -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6" data-i18n="footer.nav">Navigation</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
@@ -424,6 +428,7 @@
           </ul>
         </div>
 
+        <!-- Colonne 3 : Services -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6" data-i18n="footer.services">Services</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
@@ -431,7 +436,7 @@
           </ul>
         </div>
 
-        <!-- ✅ Footer Contact corrigé -->
+        <!-- Colonne 4 : Contact -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6" data-i18n="footer.contact">Contact</p>
           <ul class="space-y-4 text-sm font-light text-alabaster/80">
@@ -459,6 +464,39 @@
         </div>
       </div>
 
+      <!-- ===== Bloc Newsletter ===== -->
+      <div class="border-t border-alabaster/15 pt-10 pb-10">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-gold mb-3">Newsletter</p>
+            <p class="font-serif text-xl md:text-2xl text-alabaster/90 leading-tight">
+              Recevez nos actualités et offres privées.
+            </p>
+          </div>
+          <div>
+            <form class="newsletter-form flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="Votre email"
+                aria-label="Votre adresse email"
+                class="flex-1 bg-transparent border border-alabaster/30 px-4 py-3 text-alabaster placeholder-alabaster/40 focus:border-gold outline-none transition-colors"
+              />
+              <button
+                type="submit"
+                data-label="S'inscrire"
+                class="bg-alabaster text-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-gold hover:text-alabaster transition-colors duration-500"
+              >
+                <span>S'inscrire</span>
+              </button>
+              <p class="newsletter-status hidden text-xs mt-3"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Bloc copyright ===== -->
       <div class="border-t border-alabaster/15 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-xs uppercase tracking-widest text-alabaster/50">
         <p>© 2026 Beauty by Asty</p>
         <div class="flex flex-wrap gap-4 md:gap-6 justify-center">
@@ -468,53 +506,25 @@
         </div>
         <p id="footerMade"></p>
       </div>
+
     </div>
-    <!-- ============ NEWSLETTER ============ -->
-<div class="border-t border-alabaster/15 pt-10 mt-10">
-  <div class="grid md:grid-cols-2 gap-8 items-center">
-    <div>
-      <p class="text-xs uppercase tracking-[0.3em] text-gold mb-3">Newsletter</p>
-      <p class="font-serif text-xl md:text-2xl text-alabaster/90 leading-tight">
-        Recevez nos actualités et offres privées.
-      </p>
-    </div>
-    <div>
-      <form class="newsletter-form flex flex-col sm:flex-row gap-3">
-        <input 
-          type="email" 
-          required 
-          placeholder="Votre email"
-          class="flex-1 bg-transparent border border-alabaster/30 px-4 py-3 text-alabaster placeholder-alabaster/40 focus:border-gold outline-none transition-colors"
-        />
-        <button 
-          type="submit" 
-          data-label="S'inscrire"
-          class="bg-alabaster text-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-gold hover:text-alabaster transition-colors duration-500"
-        >
-          <span>S'inscrire</span>
-        </button>
-      </form>
-      <p class="newsletter-status hidden text-xs mt-3"></p>
-    </div>
-  </div>
-</div>
   </footer>
 
   </main>
 
-<script>
-  window.BRAND = 'beauty';
-</script>
-<script src="js/supabase-config.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/switcher.js"></script>
-<script src="js/content.js" defer></script>
-<script src="js/gallery.js" defer></script>
-<script src="js/reviews.js" defer></script>
-<script src="js/faq.js" defer></script>
-<script src="js/booking.js" defer></script>
-<script src="js/main.js" defer></script>
-<script src="js/receipt.js" defer></script>
-<script src="js/newsletter.js" defer></script>
+  <script>
+    window.BRAND = 'beauty';
+  </script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/switcher.js"></script>
+  <script src="js/content.js" defer></script>
+  <script src="js/gallery.js" defer></script>
+  <script src="js/reviews.js" defer></script>
+  <script src="js/faq.js" defer></script>
+  <script src="js/booking.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/receipt.js" defer></script>
+  <script src="js/newsletter.js" defer></script>
 </body>
 </html>
