@@ -1331,7 +1331,7 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=2000&q=85');
+  background-image: url('https://i.postimg.cc/cCBnvPh2/salon.png');
   background-size: cover;
   background-position: center;
   opacity: 0.15;
