@@ -89,6 +89,7 @@
         <button class="admin-tab whitespace-nowrap" data-tab="bookings">Réservations</button>
         <button class="admin-tab whitespace-nowrap" data-tab="faq">FAQ</button>
         <button class="admin-tab whitespace-nowrap" data-tab="salon">Salon Privé</button>
+        <button class="admin-tab whitespace-nowrap" data-tab="newsletter">Newsletter</button>
       </nav>
     </header>
 
@@ -214,6 +215,42 @@
         </div>
 
         <div id="salonAdminList" class="space-y-4"></div>
+      </section>
+
+      <!-- NEWSLETTER -->
+      <section id="tab-newsletter" class="tab-panel hidden">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8">
+          <h2 class="font-serif text-2xl md:text-3xl">Newsletter</h2>
+          <div class="flex flex-wrap gap-2">
+            <button class="filter-newsletter-btn active text-xs uppercase tracking-widest border border-sand px-3 py-2" data-status="active">Actifs</button>
+            <button class="filter-newsletter-btn text-xs uppercase tracking-widest border border-sand px-3 py-2" data-status="unsubscribed">Désabonnés</button>
+            <button class="filter-newsletter-btn text-xs uppercase tracking-widest border border-sand px-3 py-2" data-status="all">Tous</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-10">
+          <div class="border border-sand p-5 md:p-6 text-center">
+            <p class="font-serif text-4xl text-gold mb-2" id="newsletterActiveCount">—</p>
+            <p class="text-xs uppercase tracking-widest text-espresso/50">Abonnés actifs</p>
+          </div>
+          <div class="border border-sand p-5 md:p-6 text-center">
+            <p class="font-serif text-4xl text-gold mb-2" id="newsletterUnsubCount">—</p>
+            <p class="text-xs uppercase tracking-widest text-espresso/50">Désabonnés</p>
+          </div>
+          <div class="border border-sand p-5 md:p-6 text-center">
+            <p class="font-serif text-4xl text-gold mb-2" id="newsletterTotalCount">—</p>
+            <p class="text-xs uppercase tracking-widest text-espresso/50">Total</p>
+          </div>
+        </div>
+
+        <div class="border border-sand p-5 md:p-6 mb-10">
+          <p class="text-xs uppercase tracking-widest text-espresso/50 mb-4">Exporter les emails</p>
+          <button id="exportNewsletterBtn" class="border border-espresso px-4 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+            Télécharger CSV
+          </button>
+        </div>
+
+        <div id="newsletterAdminList" class="space-y-3"></div>
       </section>
 
     </main>
