@@ -187,6 +187,9 @@ function initNav() {
       if (currentTab === 'salon') {
         loadSalonAdmin();
       }
+       if (currentTab === 'newsletter') {
+     loadNewsletterAdmin();
+   }
     });
   });
 }
@@ -1057,6 +1060,104 @@ function escapeHtml(str) {
   div.textContent = String(str);
   return div.innerHTML;
 }
+/* ============================
+   NEWSLETTER
+   ============================ */
+let allNewsletterSubscribers = [];
+let currentNewsletterFilter = 'active';
+
+async function loadNewsletterAdmin() {
+  const { data, error } = await supabaseClient
+    .from('newsletter_subscribers')
+    .select('*')
+    .order('subscribed_at', { ascending: false });
+
+  if (error) { console.error(error); return; }
+  allNewsletterSubscribers = data || [];
+  renderNewsletterAdmin();
+  updateNewsletterStats();
+}
+
+function renderNewsletterAdmin() {
+  const list = document.getElementById('newsletterAdminList');
+  if (!list) return;
+
+  let filtered = allNewsletterSubscribers;
+  if (currentNewsletterFilter !== 'all') {
+    filtered = filtered.filter(s => s.status === currentNewsletterFilter);
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<p class="text-center font-serif italic text-espresso/60 py-12">Aucun abonné dans cette catégorie.</p>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(s => `
+    <div class="border border-sand p-4 flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <p class="font-serif text-lg">${escapeHtml(s.name || '—')}</p>
+        <p class="text-sm text-espresso/70">${escapeHtml(s.email)}</p>
+        <p class="text-xs uppercase tracking-widest text-espresso/40 mt-1">
+          ${s.language === 'en' ? 'EN' : 'FR'} · ${new Date(s.subscribed_at).toLocaleDateString('fr-FR')}
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="status-badge ${s.status === 'active' ? 'status-approved' : 'status-pending'}">
+          ${s.status === 'active' ? 'Actif' : 'Désabonné'}
+        </span>
+        <button onclick="deleteNewsletterSubscriber('${s.id}')" class="text-xs uppercase tracking-widest text-terracotta hover:underline">Supprimer</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateNewsletterStats() {
+  const active = allNewsletterSubscribers.filter(s => s.status === 'active').length;
+  const unsub = allNewsletterSubscribers.filter(s => s.status === 'unsubscribed').length;
+  const total = allNewsletterSubscribers.length;
+
+  const el1 = document.getElementById('newsletterActiveCount');
+  const el2 = document.getElementById('newsletterUnsubCount');
+  const el3 = document.getElementById('newsletterTotalCount');
+  if (el1) el1.textContent = active;
+  if (el2) el2.textContent = unsub;
+  if (el3) el3.textContent = total;
+}
+
+async function deleteNewsletterSubscriber(id) {
+  if (!confirm('Supprimer cet abonné définitivement ?')) return;
+  await supabaseClient.from('newsletter_subscribers').delete().eq('id', id);
+  loadNewsletterAdmin();
+}
+
+function initNewsletterAdmin() {
+  document.querySelectorAll('.filter-newsletter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-newsletter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentNewsletterFilter = btn.dataset.status;
+      renderNewsletterAdmin();
+    });
+  });
+
+  const exportBtn = document.getElementById('exportNewsletterBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const active = allNewsletterSubscribers.filter(s => s.status === 'active');
+      const csv = 'Email,Nom,Langue,Date\n' + active.map(s =>
+        `"${s.email}","${(s.name || '').replace(/"/g, '""')}","${s.language}","${new Date(s.subscribed_at).toLocaleDateString('fr-FR')}"`
+      ).join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `newsletter-beauty-by-asty-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+}
 
 /* ============================
    INIT
@@ -1070,5 +1171,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initFaqAdd();
   initAddContent();
   initSalonAdmin();
+  initNewsletterAdmin();
   await checkSession();
 });
