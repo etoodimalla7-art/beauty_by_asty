@@ -75,7 +75,35 @@ function renderBlock(block) {
   const cta = isFR ? block.cta_fr : block.cta_en;
 
   switch (block.type) {
-    case 'video':
+       case 'video':
+      // Détecte si l'URL est un embed YouTube/Vimeo valide
+      const isEmbeddable = block.media_url &&
+        (block.media_url.includes('youtube.com/embed') || block.media_url.includes('player.vimeo.com'));
+
+      if (!isEmbeddable) {
+        // Placeholder élégant pour les URLs non-embeddables
+        return `
+          <section class="salon-block salon-block-video reveal">
+            ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
+            ${content ? `<p class="salon-block-text">${escapeHtml(content)}</p>` : ''}
+            <div class="salon-video-placeholder">
+              <div class="salon-video-placeholder-content">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 16px;">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polygon points="10 8 16 12 10 16 10 8"/>
+                </svg>
+                <p class="salon-video-placeholder-title">
+                  ${isFR ? 'Vidéo bientôt disponible' : 'Video coming soon'}
+                </p>
+                <p class="salon-video-placeholder-sub">
+                  ${isFR ? 'Coulisses en préparation' : 'Backstage in preparation'}
+                </p>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
       return `
         <section class="salon-block salon-block-video reveal">
           ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
