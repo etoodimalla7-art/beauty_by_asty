@@ -460,6 +460,36 @@
         <p id="footerMade"></p>
       </div>
     </div>
+
+    <!-- ============ NEWSLETTER ============ -->
+<div class="border-t border-alabaster/15 pt-10 mt-10">
+  <div class="grid md:grid-cols-2 gap-8 items-center">
+    <div>
+      <p class="text-xs uppercase tracking-[0.3em] text-gold mb-3">Newsletter</p>
+      <p class="font-serif text-xl md:text-2xl text-alabaster/90 leading-tight">
+        Recevez nos actualités et offres privées.
+      </p>
+    </div>
+    <div>
+      <form class="newsletter-form flex flex-col sm:flex-row gap-3">
+        <input 
+          type="email" 
+          required 
+          placeholder="Votre email"
+          class="flex-1 bg-transparent border border-alabaster/30 px-4 py-3 text-alabaster placeholder-alabaster/40 focus:border-gold outline-none transition-colors"
+        />
+        <button 
+          type="submit" 
+          data-label="S'inscrire"
+          class="bg-alabaster text-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-gold hover:text-alabaster transition-colors duration-500"
+        >
+          <span>S'inscrire</span>
+        </button>
+      </form>
+      <p class="newsletter-status hidden text-xs mt-3"></p>
+    </div>
+  </div>
+</div>
   </footer>
 
   </main>
