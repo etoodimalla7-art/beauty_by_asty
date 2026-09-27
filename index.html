@@ -277,7 +277,11 @@
   <!-- ============ FOOTER ============ -->
   <footer class="bg-espresso text-alabaster pt-16 md:pt-20 pb-8 md:pb-10">
     <div class="max-w-[1400px] mx-auto px-5 md:px-10">
+
+      <!-- ===== Bloc principal : 4 colonnes ===== -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12 md:mb-16">
+
+        <!-- Colonne 1 : Marque + réseaux -->
         <div>
           <p class="font-serif text-2xl md:text-3xl mb-4">Beauty by Asty</p>
           <p id="groupFooterTagline" class="text-sm font-light text-alabaster/70 leading-relaxed mb-6"></p>
@@ -288,6 +292,8 @@
             <a href="https://wa.me/22578494430" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp Beauty by Asty"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.7 7.4L3.5 20l1.2-4.2A8.5 8.5 0 1 1 20.5 11.5z"/><path d="M8.8 8.2c.2-.5.4-.6.7-.6h.6c.2 0 .5 0 .7.5l.8 1.9c.1.3.1.5 0 .7l-.5.7c-.1.2-.2.3-.1.5.3.6 1.7 2 3.2 2.6.2.1.4.1.5-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.5.2.5.5.5.7 0 .3-.1.6-.5 1-.4.4-1.1.7-1.9.6-1.4-.2-3.2-1-4.7-2.5-1.3-1.3-2.2-2.9-2.4-4.3-.1-.6 0-1.4.6-1.8z"/></svg></a>
           </div>
         </div>
+
+        <!-- Colonne 2 : Navigation -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6">Navigation</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
@@ -298,15 +304,19 @@
             <li><a href="#contact" class="hover:text-gold transition">Contact</a></li>
           </ul>
         </div>
+
+        <!-- Colonne 3 : Nos maisons -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6">Nos maisons</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
-            <li><a href="beauty.html" class="hover:text-gold transition">Beauty by Asty Beaute</a></li>
+            <li><a href="beauty.html" class="hover:text-gold transition">Beauty by Asty Beauté</a></li>
             <li><a href="deco.html" class="hover:text-gold transition">Beauty by Asty Déco</a></li>
             <li><a href="studio.html" class="hover:text-gold transition">Beauty by Asty Studio</a></li>
             <li><a href="salon.html" class="hover:text-gold transition">Le Salon Privé</a></li>
           </ul>
         </div>
+
+        <!-- Colonne 4 : Contact -->
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gold mb-6">Contact</p>
           <ul class="space-y-3 text-sm font-light text-alabaster/80">
@@ -317,7 +327,39 @@
         </div>
       </div>
 
-      <!-- ✅ BLOC COPYRIGHT AVEC LIENS LÉGAUX -->
+      <!-- ===== Bloc Newsletter ===== -->
+      <div class="border-t border-alabaster/15 pt-10 pb-10">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-gold mb-3">Newsletter</p>
+            <p class="font-serif text-xl md:text-2xl text-alabaster/90 leading-tight">
+              Recevez nos actualités et offres privées.
+            </p>
+          </div>
+          <div>
+            <form class="newsletter-form flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="Votre email"
+                aria-label="Votre adresse email"
+                class="flex-1 bg-transparent border border-alabaster/30 px-4 py-3 text-alabaster placeholder-alabaster/40 focus:border-gold outline-none transition-colors"
+              />
+              <button
+                type="submit"
+                data-label="S'inscrire"
+                class="bg-alabaster text-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-gold hover:text-alabaster transition-colors duration-500"
+              >
+                <span>S'inscrire</span>
+              </button>
+              <p class="newsletter-status hidden text-xs mt-3"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Bloc copyright ===== -->
       <div class="border-t border-alabaster/15 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-xs uppercase tracking-widest text-alabaster/50">
         <p>© 2026 Beauty by Asty</p>
         <div class="flex flex-wrap gap-4 md:gap-6 justify-center">
@@ -327,47 +369,19 @@
         </div>
         <p id="groupFooterMade"></p>
       </div>
+
     </div>
-    <!-- ============ NEWSLETTER ============ -->
-<div class="border-t border-alabaster/15 pt-10 mt-10">
-  <div class="grid md:grid-cols-2 gap-8 items-center">
-    <div>
-      <p class="text-xs uppercase tracking-[0.3em] text-gold mb-3">Newsletter</p>
-      <p class="font-serif text-xl md:text-2xl text-alabaster/90 leading-tight">
-        Recevez nos actualités et offres privées.
-      </p>
-    </div>
-    <div>
-      <form class="newsletter-form flex flex-col sm:flex-row gap-3">
-        <input 
-          type="email" 
-          required 
-          placeholder="Votre email"
-          class="flex-1 bg-transparent border border-alabaster/30 px-4 py-3 text-alabaster placeholder-alabaster/40 focus:border-gold outline-none transition-colors"
-        />
-        <button 
-          type="submit" 
-          data-label="S'inscrire"
-          class="bg-alabaster text-espresso px-6 py-3 text-xs uppercase tracking-widest hover:bg-gold hover:text-alabaster transition-colors duration-500"
-        >
-          <span>S'inscrire</span>
-        </button>
-      </form>
-      <p class="newsletter-status hidden text-xs mt-3"></p>
-    </div>
-  </div>
-</div>
   </footer>
 
   </main>
 
-<script src="js/supabase-config.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/switcher.js" defer></script>
-<script src="js/group.js" defer></script>
-<script src="js/main-group.js" defer></script>
-<script src="js/cookies.js" defer></script>
-<script src="js/asty.js" defer></script>  <!-- ✅ AJOUT -->
-<script src="js/newsletter.js" defer></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/switcher.js" defer></script>
+  <script src="js/group.js" defer></script>
+  <script src="js/main-group.js" defer></script>
+  <script src="js/cookies.js" defer></script>
+  <script src="js/asty.js" defer></script>
+  <script src="js/newsletter.js" defer></script>
 </body>
 </html>
