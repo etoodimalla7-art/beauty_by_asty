@@ -27,8 +27,6 @@ function buildWhatsAppMessage(data) {
   return encodeURIComponent(lines.join('\n'));
 }
 
-
-
 function initBookingForm() {
   const form = document.getElementById('bookingForm');
   if (!form) return;
@@ -55,15 +53,31 @@ function initBookingForm() {
     const receiptId = generateReceiptId(window.BRAND || 'beauty');
 
     // 2. Sauvegarde dans Supabase (avec receipt_id)
-    const { error } = await supabaseClient
+    const { data: insertedData, error } = await supabaseClient
       .from('bookings')
       .insert([{
         ...data,
         brand: window.BRAND || 'beauty',
         receipt_id: receiptId
-      }]);
+      }])
+      .select()
+      .single();
 
-    if (error) console.error('booking save', error);
+    // ⚠️ SI ERREUR → AFFICHE UNE ALERTE VISIBLE
+    if (error) {
+      console.error('❌ ERREUR INSERTION BOOKING:', error);
+      alert(
+        '❌ ERREUR SUPABASE ❌\n\n' +
+        'Message : ' + error.message + '\n' +
+        'Code : ' + error.code + '\n' +
+        'Détails : ' + (error.details || 'aucun') + '\n' +
+        'Hint : ' + (error.hint || 'aucun')
+      );
+      return; // Arrête tout — pas de WhatsApp, pas de reçu
+    }
+
+    // ✅ SUCCÈS → Continuer
+    console.log('✅ Réservation sauvegardée :', insertedData);
 
     // 3. Ouvre WhatsApp avec le message principal
     const wa = SITE_CONFIG.whatsappNumber;
@@ -83,7 +97,7 @@ function initBookingForm() {
       // Construit l'URL permanente du reçu
       const receiptUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}recu.html?id=${encodeURIComponent(receiptId)}`;
 
-      // === NOUVEAU : affiche le lien permanent du reçu ===
+      // === Affiche le lien permanent du reçu ===
       const permanentLinkBlock = document.getElementById('permanentLinkBlock');
       const permanentLinkInput = document.getElementById('permanentLinkInput');
       const copyLinkBtn = document.getElementById('copyLinkBtn');
