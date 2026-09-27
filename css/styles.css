@@ -1309,3 +1309,401 @@ body[data-brand="studio"] .switcher-link[data-switch="studio"]::after {
 .asty-send:hover {
   background: #B8895A;
 }
+
+/* ============================================
+   SALON PRIVÉ — Styles
+   ============================================ */
+
+/* ---------- HERO SALON ---------- */
+.salon-hero {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #1C1410;
+  color: #FAF7F2;
+  padding: 120px 20px 80px;
+  overflow: hidden;
+}
+.salon-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=2000&q=85');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+}
+.salon-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+.salon-hero-tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  color: #B8895A;
+  margin-bottom: 24px;
+}
+.salon-hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.05;
+  margin-bottom: 24px;
+}
+.salon-hero-title em {
+  color: #B8895A;
+  font-style: italic;
+}
+.salon-hero-subtitle {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.7;
+  opacity: 0.85;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---------- BANNIÈRE D'ACCÈS ---------- */
+.salon-access-banner {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.salon-access-banner-guest {
+  background: #FAF7F2;
+  border: 1px solid #B8895A;
+}
+.salon-access-banner-client {
+  background: #E8DDD0;
+  border: 1px solid #B8895A;
+  font-size: 0.9rem;
+}
+.salon-access-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  color: #1C1410;
+  margin-bottom: 4px;
+}
+.salon-access-subtitle {
+  font-size: 0.85rem;
+  color: rgba(28, 20, 16, 0.7);
+  font-weight: 300;
+}
+.salon-access-cta {
+  background: #1C1410;
+  color: #FAF7F2;
+  padding: 12px 24px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  transition: background 0.35s ease;
+  white-space: nowrap;
+}
+.salon-access-cta:hover {
+  background: #B8895A;
+}
+.salon-logout-btn {
+  background: none;
+  border: 1px solid #1C1410;
+  padding: 8px 16px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  color: #1C1410;
+  transition: all 0.3s ease;
+}
+.salon-logout-btn:hover {
+  background: #1C1410;
+  color: #FAF7F2;
+}
+
+/* ---------- FILTRES PAR MAISON ---------- */
+.salon-filters {
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.salon-filter-btn {
+  border: 1px solid #E8DDD0;
+  padding: 10px 20px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  background: transparent;
+  color: #1C1410;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  font-family: 'Jost', sans-serif;
+}
+.salon-filter-btn:hover,
+.salon-filter-btn.active {
+  background: #1C1410;
+  color: #FAF7F2;
+  border-color: #1C1410;
+}
+
+/* ---------- BLOCS ---------- */
+.salon-blocks {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px 100px;
+}
+.salon-block {
+  margin-bottom: 80px;
+}
+.salon-block:last-child {
+  margin-bottom: 0;
+}
+.salon-block-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.15;
+  color: #1C1410;
+  margin-bottom: 16px;
+}
+.salon-block-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(28, 20, 16, 0.75);
+  margin-bottom: 24px;
+  max-width: 700px;
+}
+
+/* ---------- VIDÉO ---------- */
+.salon-video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  background: #1C1410;
+  margin-top: 24px;
+}
+.salon-video-wrapper iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+
+/* Placeholder vidéo (pour URLs Facebook) */
+.salon-video-placeholder {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background: #1C1410;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FAF7F2;
+  text-align: center;
+}
+.salon-video-placeholder-content {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+}
+.salon-video-placeholder-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  color: #B8895A;
+  margin-bottom: 8px;
+}
+.salon-video-placeholder-sub {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ---------- OFFRE ---------- */
+.salon-block-offer {
+  background: #FAF7F2;
+  border: 1px solid #E8DDD0;
+  padding: 40px 32px;
+  position: relative;
+}
+.salon-offer-badge {
+  display: inline-block;
+  background: #B8895A;
+  color: #FAF7F2;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  padding: 6px 14px;
+  margin-bottom: 20px;
+}
+.salon-offer-expires {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: #B8895A;
+  margin-bottom: 24px;
+}
+
+/* ---------- ARTICLE ---------- */
+.salon-block-article {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .salon-block-article {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+}
+.salon-article-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- GALERIE ---------- */
+.salon-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+@media (min-width: 768px) {
+  .salon-gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+.salon-gallery-item {
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: #E8DDD0;
+}
+.salon-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.salon-gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+/* ---------- TOUR 3D ---------- */
+.salon-tour-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 60%;
+  height: 0;
+  overflow: hidden;
+  background: #1C1410;
+  margin-top: 24px;
+}
+.salon-tour-wrapper iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+
+/* ---------- FORMULAIRE DE CONNEXION ---------- */
+#salonLoginForm {
+  max-width: 500px;
+  margin: 60px auto 0;
+  padding: 0 20px;
+}
+.salon-login-card {
+  background: #FAF7F2;
+  border: 1px solid #E8DDD0;
+  padding: 40px 32px;
+  text-align: center;
+}
+.salon-login-tag {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  color: #B8895A;
+  margin-bottom: 16px;
+}
+.salon-login-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.75rem;
+  margin-bottom: 12px;
+  color: #1C1410;
+}
+.salon-login-subtitle {
+  font-size: 0.9rem;
+  color: rgba(28, 20, 16, 0.7);
+  font-weight: 300;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.salon-login-form {
+  text-align: left;
+}
+
+/* ---------- FOOTER DU SALON ---------- */
+.salon-footer {
+  background: #1C1410;
+  color: #FAF7F2;
+  padding: 60px 20px 40px;
+  text-align: center;
+}
+.salon-footer-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.salon-footer-text {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  font-weight: 300;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 640px) {
+  .salon-hero {
+    min-height: 50vh;
+    padding: 100px 20px 60px;
+  }
+  .salon-blocks {
+    padding: 40px 20px 60px;
+  }
+  .salon-block {
+    margin-bottom: 50px;
+  }
+  .salon-block-offer {
+    padding: 28px 20px;
+  }
+  .salon-access-banner {
+    padding: 16px 20px;
+  }
+  .salon-access-banner-guest {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .salon-access-cta {
+    text-align: center;
+  }
+}
