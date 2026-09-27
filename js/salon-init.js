@@ -11,7 +11,7 @@ async function initSalon() {
   // 1. Charge le tier d'accès du client
   await checkSalonAccess();
 
-  // 2. Charge les blocs de la maison active par défaut (group)
+  // 2. Charge les blocs du groupe par défaut
   salonState.brand = 'group';
   salonState.blocks = await loadSalonBlocks('group');
   renderSalonBlocks(salonState.blocks);
@@ -36,7 +36,6 @@ function initSalonFilters() {
       salonState.brand = brand;
       salonState.blocks = await loadSalonBlocks(brand);
 
-      // Filtre également selon le tier
       renderSalonBlocks(salonState.blocks);
     });
   });
