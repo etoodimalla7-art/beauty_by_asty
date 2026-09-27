@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Le Salon Privé — Beauty by Asty</title>
+  <meta name="description" content="Le Salon Privé Beauty by Asty — Un espace exclusif réservé à nos clients. Vidéos, offres privées, coulisses et bien plus." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/hGjxFhk9/f4c7dd9c-a888-401e-bdf4-98204fceed03.png" />
+  <meta name="theme-color" content="#1C1410" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        alabaster:'#FAF7F2', espresso:'#1C1410', gold:'#B8895A',
+        terracotta:'#8B4A3B', sand:'#E8DDD0'
+      }, fontFamily: {
+        serif:['"Cormorant Garamond"','serif'], sans:['Jost','sans-serif']
+      }}}
+    }
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-alabaster text-espresso font-sans antialiased">
+
+  <!-- NAVBAR SIMPLE -->
+  <header class="border-b border-sand">
+    <nav class="max-w-[1400px] mx-auto px-5 md:px-10 py-4 md:py-5 flex items-center justify-between">
+      <a href="index.html" class="font-serif text-lg md:text-2xl tracking-wide">Beauty by Asty</a>
+      <a href="index.html" class="text-xs uppercase tracking-widest hover:text-gold transition">← Retour à l'accueil</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="salon-hero">
+      <div class="salon-hero-inner">
+        <p class="salon-hero-tag">Beauty by Asty — Espace privé</p>
+        <h1 class="salon-hero-title">
+          Le Salon <em>Privé</em>
+        </h1>
+        <p class="salon-hero-subtitle">
+          Un espace réservé à ceux qui font partie de la maison.
+          Vidéos exclusives, coulisses, offres privées et bien plus.
+        </p>
+      </div>
+    </section>
+
+    <!-- BANNIÈRE D'ACCÈS -->
+    <div id="salonAccessBanner"></div>
+
+    <!-- FORMULAIRE DE CONNEXION -->
+    <div id="salonLoginForm" class="hidden"></div>
+
+    <!-- FILTRES PAR MAISON -->
+    <nav class="salon-filters" id="salonFilters">
+      <button class="salon-filter-btn active" data-brand="group">Groupe</button>
+      <button class="salon-filter-btn" data-brand="beauty">Beauty</button>
+      <button class="salon-filter-btn" data-brand="deco">Déco</button>
+      <button class="salon-filter-btn" data-brand="studio">Studio</button>
+    </nav>
+
+    <!-- BLOCS DYNAMIQUES -->
+    <section class="salon-blocks">
+      <div id="salonBlocks"></div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER SIMPLE -->
+  <footer class="salon-footer">
+    <p class="salon-footer-title">Beauty by Asty</p>
+    <p class="salon-footer-text">Le Salon Privé — Un espace réservé à nos clients</p>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/salon.js"></script>
+  <script src="js/salon-access.js"></script>
+  <script src="js/salon-init.js"></script>
+</body>
+</html>
