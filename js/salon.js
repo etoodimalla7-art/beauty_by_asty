@@ -1,6 +1,6 @@
 /* ============================================
    SALON PRIVÉ — Chargement + affichage
-   Beauty by Asty — Multi-plateforme v3
+   Beauty by Asty — Multi-plateforme v4 (final)
    ============================================ */
 
 /* --- État global du salon (exposé dans window) --- */
@@ -81,10 +81,8 @@ function renderSalonBlocks(blocks) {
 
   if (blocks.length === 0) {
     container.innerHTML = `
-      <div class="text-center py-20">
-        <p class="font-serif italic text-xl text-espresso/60">
-          Le Salon Privé se prépare...
-        </p>
+      <div class="salon-empty">
+        <p>Le Salon Privé se prépare...</p>
       </div>
     `;
     return;
@@ -118,21 +116,19 @@ function renderBlock(block, tier) {
 
   if (isLocked) {
     return `
-      <section class="salon-block salon-block-locked relative">
-        <div class="relative overflow-hidden">
-          <div class="aspect-video bg-espresso/90 flex flex-col items-center justify-center text-alabaster backdrop-blur-md">
-            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mb-4">
-              <rect x="4" y="10" width="16" height="11" rx="2"/>
-              <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-            </svg>
-            <p class="text-xs uppercase tracking-[0.3em] text-gold mb-3">Contenu privé</p>
-            <p class="font-serif italic text-xl text-center max-w-xs px-4 mb-4">
-              ${escapeHtml(title || 'Réservé aux clients')}
-            </p>
-            <p class="text-xs text-alabaster/60 max-w-xs text-center px-4">
-              ${isFR ? 'Réservez votre première séance pour débloquer ce contenu.' : 'Book your first session to unlock this content.'}
-            </p>
-          </div>
+      <section class="salon-block salon-block-locked">
+        <div class="salon-locked-content">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="10" width="16" height="11" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+          </svg>
+          <p class="salon-locked-tag">Contenu privé</p>
+          <p class="salon-locked-title">
+            ${escapeHtml(title || 'Réservé aux clients')}
+          </p>
+          <p class="salon-locked-text">
+            ${isFR ? 'Réservez votre première séance pour débloquer ce contenu.' : 'Book your first session to unlock this content.'}
+          </p>
         </div>
       </section>
     `;
@@ -181,15 +177,14 @@ function renderVideoBlock(block, title, content) {
   } else if (type === 'video') {
     mediaHTML = `
       <div class="salon-video-wrapper">
-        <video src="${url}" controls preload="metadata" playsinline class="w-full h-full object-cover"></video>
+        <video src="${url}" controls preload="metadata" playsinline></video>
       </div>`;
   } else if (type === 'link') {
     const domain = extractDomain(url);
     mediaHTML = `
-      <div class="p-6 border border-sand bg-sand/30 text-center">
-        <p class="text-xs uppercase tracking-widest text-espresso/60 mb-3">Lien externe</p>
-        <a href="${url}" target="_blank" rel="noopener"
-           class="inline-flex items-center gap-2 border border-espresso px-5 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+      <div class="salon-external-link">
+        <p class="salon-external-tag">Lien externe</p>
+        <a href="${url}" target="_blank" rel="noopener" class="salon-external-btn">
           Ouvrir sur ${domain}
         </a>
       </div>`;
@@ -197,7 +192,7 @@ function renderVideoBlock(block, title, content) {
     mediaHTML = `
       <div class="salon-video-placeholder">
         <div class="salon-video-placeholder-content">
-          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 16px;">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <polygon points="10 8 16 12 10 16 10 8"/>
           </svg>
