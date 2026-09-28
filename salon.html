@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Le Salon Privé — Beauty by Asty</title>
-  <meta name="description" content="Le Salon Privé Beauty by Asty — Un espace exclusif réservé à nos clients. Vidéos, offres privées, coulisses et bien plus." />
+  <meta name="description" content="Le Salon Privé Beauty by Asty — Un espace exclusif réservé à nos clients." />
   <meta name="robots" content="noindex, nofollow" />
 
   <link rel="icon" type="image/png" href="https://i.postimg.cc/hGjxFhk9/f4c7dd9c-a888-401e-bdf4-98204fceed03.png" />
@@ -31,7 +31,6 @@
 </head>
 <body class="bg-alabaster text-espresso font-sans antialiased">
 
-  <!-- NAVBAR SIMPLE -->
   <header class="border-b border-sand">
     <nav class="max-w-[1400px] mx-auto px-5 md:px-10 py-4 md:py-5 flex items-center justify-between">
       <a href="index.html" class="font-serif text-lg md:text-2xl tracking-wide">Beauty by Asty</a>
@@ -41,7 +40,6 @@
 
   <main>
 
-    <!-- HERO -->
     <section class="salon-hero">
       <div class="salon-hero-inner">
         <p class="salon-hero-tag">Beauty by Asty — Espace privé</p>
@@ -55,13 +53,9 @@
       </div>
     </section>
 
-    <!-- BANNIÈRE D'ACCÈS -->
     <div id="salonAccessBanner"></div>
-
-    <!-- FORMULAIRE DE CONNEXION -->
     <div id="salonLoginForm" class="hidden"></div>
 
-    <!-- FILTRES PAR MAISON -->
     <nav class="salon-filters" id="salonFilters">
       <button class="salon-filter-btn active" data-brand="group">Groupe</button>
       <button class="salon-filter-btn" data-brand="beauty">Beauty</button>
@@ -69,7 +63,6 @@
       <button class="salon-filter-btn" data-brand="studio">Studio</button>
     </nav>
 
-    <!-- BLOCS DYNAMIQUES -->
     <section class="salon-blocks">
       <div id="salonBlocks">
         <p class="text-center font-serif italic text-espresso/60 py-16">Chargement…</p>
@@ -78,13 +71,12 @@
 
   </main>
 
-  <!-- FOOTER SIMPLE -->
   <footer class="salon-footer">
     <p class="salon-footer-title">Beauty by Asty</p>
     <p class="salon-footer-text">Le Salon Privé — Un espace réservé à nos clients</p>
   </footer>
 
-  <!-- SCRIPTS — ordre important : config → salon → access → init -->
+  <!-- Ordre CRITIQUE : config → salon (définit tout) → access → init -->
   <script src="js/supabase-config.js"></script>
   <script src="js/salon.js"></script>
   <script src="js/salon-access.js"></script>
