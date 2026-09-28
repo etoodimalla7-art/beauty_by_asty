@@ -1,32 +1,56 @@
 /* ============================================
-   BOOKING — Save + WhatsApp (réservations uniquement)
+   BOOKING — Save + WhatsApp (avec lien reçu)
+   Beauty by Asty
    ============================================ */
-function buildWhatsAppMessage(data) {
+
+/* -------- Message WhatsApp (propre, sans emoji) -------- */
+function buildWhatsAppMessage(data, receiptId, receiptUrl) {
   const isFR = currentLang === 'fr';
+
   const lines = isFR ? [
-    `✨ *Nouvelle Demande de Réservation — Beauty by Asty*`, ``,
-    `👤 *Nom :* ${data.name}`,
-    `📞 *Téléphone :* ${data.phone}`,
-    `💄 *Prestation :* ${data.service}`,
-    `📅 *Date :* ${data.date}`,
-    `🕐 *Heure :* ${data.time}`,
-    `📍 *Lieu :* ${data.location || '—'}`, ``,
-    `📝 *Message :*`, data.message || '—', ``,
-    `_Merci de confirmer ma réservation._`
+    `Nouvelle demande de réservation — Beauty by Asty`,
+    ``,
+    `Nom : ${data.name}`,
+    `Téléphone : ${data.phone}`,
+    `Prestation : ${data.service}`,
+    `Date : ${data.date}`,
+    `Heure : ${data.time}`,
+    `Lieu : ${data.location || '—'}`,
+    ``,
+    `Message :`,
+    data.message || '—',
+    ``,
+    `Numéro de reçu : ${receiptId}`,
+    ``,
+    `Télécharger mon reçu :`,
+    receiptUrl,
+    ``,
+    `Merci de confirmer ma réservation.`
   ] : [
-    `✨ *New Booking Request — Beauty by Asty*`, ``,
-    `👤 *Name:* ${data.name}`,
-    `📞 *Phone:* ${data.phone}`,
-    `💄 *Service:* ${data.service}`,
-    `📅 *Date:* ${data.date}`,
-    `🕐 *Time:* ${data.time}`,
-    `📍 *Location:* ${data.location || '—'}`, ``,
-    `📝 *Message:*`, data.message || '—', ``,
-    `_Please confirm my booking._`
+    `New booking request — Beauty by Asty`,
+    ``,
+    `Name: ${data.name}`,
+    `Phone: ${data.phone}`,
+    `Service: ${data.service}`,
+    `Date: ${data.date}`,
+    `Time: ${data.time}`,
+    `Location: ${data.location || '—'}`,
+    ``,
+    `Message:`,
+    data.message || '—',
+    ``,
+    `Receipt number: ${receiptId}`,
+    ``,
+    `Download my receipt:`,
+    receiptUrl,
+    ``,
+    `Please confirm my booking.`
   ];
+
   return encodeURIComponent(lines.join('\n'));
 }
 
+/* -------- Init du formulaire -------- */
 function initBookingForm() {
   const form = document.getElementById('bookingForm');
   if (!form) return;
@@ -49,10 +73,10 @@ function initBookingForm() {
       return;
     }
 
-    // 1. Génère un ID de reçu unique
+    // 1. ID de reçu unique
     const receiptId = generateReceiptId(window.BRAND || 'beauty');
 
-    // 2. Sauvegarde dans Supabase (avec receipt_id)
+    // 2. Sauvegarde Supabase
     const { data: insertedData, error } = await supabaseClient
       .from('bookings')
       .insert([{
@@ -63,41 +87,40 @@ function initBookingForm() {
       .select()
       .single();
 
-    // ⚠️ SI ERREUR → AFFICHE UNE ALERTE VISIBLE
     if (error) {
       console.error('❌ ERREUR INSERTION BOOKING:', error);
       alert(
-        '❌ ERREUR SUPABASE ❌\n\n' +
+        '❌ ERREUR SUPABASE\n\n' +
         'Message : ' + error.message + '\n' +
         'Code : ' + error.code + '\n' +
         'Détails : ' + (error.details || 'aucun') + '\n' +
         'Hint : ' + (error.hint || 'aucun')
       );
-      return; // Arrête tout — pas de WhatsApp, pas de reçu
+      return;
     }
 
-    // ✅ SUCCÈS → Continuer
     console.log('✅ Réservation sauvegardée :', insertedData);
 
-    // 3. Ouvre WhatsApp avec le message principal
+    // 3. Construit l'URL permanente du reçu
+    const receiptUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}recu.html?id=${encodeURIComponent(receiptId)}`;
+
+    // 4. WhatsApp AVEC le lien du reçu
     const wa = SITE_CONFIG.whatsappNumber;
-    const whatsappMessage = buildWhatsAppMessage(data);
+    const whatsappMessage = buildWhatsAppMessage(data, receiptId, receiptUrl);
     window.open(`https://wa.me/${wa}?text=${whatsappMessage}`, '_blank');
 
-    // 4. Message succès
+    // 5. Message succès
     const success = document.getElementById('bk-success');
-    success.classList.remove('hidden');
-    setTimeout(() => success.classList.add('hidden'), 6000);
+    if (success) {
+      success.classList.remove('hidden');
+      setTimeout(() => success.classList.add('hidden'), 6000);
+    }
 
-    // 5. Affiche le bloc de téléchargement du reçu
+    // 6. Bloc de téléchargement du reçu
     const receiptBlock = document.getElementById('receiptBlock');
     if (receiptBlock) {
       receiptBlock.classList.remove('hidden');
 
-      // Construit l'URL permanente du reçu
-      const receiptUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}recu.html?id=${encodeURIComponent(receiptId)}`;
-
-      // === Affiche le lien permanent du reçu ===
       const permanentLinkBlock = document.getElementById('permanentLinkBlock');
       const permanentLinkInput = document.getElementById('permanentLinkInput');
       const copyLinkBtn = document.getElementById('copyLinkBtn');
@@ -108,40 +131,39 @@ function initBookingForm() {
         permanentLinkBlock.classList.remove('hidden');
       }
 
-      // Bouton "Copier le lien"
+      // Bouton "Copier"
       if (copyLinkBtn) {
         copyLinkBtn.onclick = () => {
           navigator.clipboard.writeText(receiptUrl).then(() => {
-            const originalText = copyLinkBtn.querySelector('span').textContent;
-            copyLinkBtn.querySelector('span').textContent = '✅ Copié !';
-            setTimeout(() => {
-              copyLinkBtn.querySelector('span').textContent = originalText;
-            }, 2000);
+            const span = copyLinkBtn.querySelector('span');
+            if (!span) return;
+            const originalText = span.textContent;
+            span.textContent = 'Copié';
+            setTimeout(() => { span.textContent = originalText; }, 2000);
           });
         };
       }
 
-      // Bouton "Envoyer le reçu sur WhatsApp"
+      // Bouton "Envoyer le reçu sur WhatsApp" (message court, sans emoji)
       if (waReceiptBtn) {
         waReceiptBtn.onclick = () => {
           const isFR = currentLang === 'fr';
           const receiptMessage = isFR
-            ? `📄 *Reçu de réservation Beauty by Asty*\n\nNuméro : *${receiptId}*\n\nRetrouvez mon reçu ici :\n${receiptUrl}`
-            : `📄 *Beauty by Asty Reservation Receipt*\n\nNumber: *${receiptId}*\n\nFind my receipt here:\n${receiptUrl}`;
+            ? `Reçu de réservation Beauty by Asty\n\nNuméro : ${receiptId}\n\nRetrouver mon reçu :\n${receiptUrl}`
+            : `Beauty by Asty booking receipt\n\nNumber: ${receiptId}\n\nFind my receipt:\n${receiptUrl}`;
           window.open(`https://wa.me/${wa}?text=${encodeURIComponent(receiptMessage)}`, '_blank');
         };
       }
 
-      // Stocke les données du reçu
-      const receiptData = { ...data, receiptId };
-
-      // Bouton de téléchargement direct du PDF
+      // Bouton PDF
       const downloadBtn = document.getElementById('downloadReceiptBtn');
       if (downloadBtn) {
-        downloadBtn.onclick = () => generateReceiptPDF(receiptData, window.BRAND || 'beauty');
+        downloadBtn.onclick = () => generateReceiptPDF(
+          { ...data, receiptId },
+          window.BRAND || 'beauty'
+        );
       }
 
-      // Scroll vers le bloc
       receiptBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
