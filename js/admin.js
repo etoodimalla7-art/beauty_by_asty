@@ -183,13 +183,13 @@ function initNav() {
       currentTab = tab.dataset.tab;
       document.getElementById(`tab-${currentTab}`).classList.remove('hidden');
 
-      // ✅ Chargement automatique du Salon quand on clique sur l'onglet
+      // Chargement automatique
       if (currentTab === 'salon') {
         loadSalonAdmin();
       }
-       if (currentTab === 'newsletter') {
-     loadNewsletterAdmin();
-   }
+      if (currentTab === 'newsletter') {
+        loadNewsletterAdmin();
+      }
     });
   });
 }
@@ -335,11 +335,11 @@ function renderContentForm(key, obj) {
     return `
       <div class="bilingual-row">
         <div class="field">
-          <label>${label} <span class="text-gold">🇫🇷 FR</span></label>
+          <label>${label} <span class="text-gold">FR</span></label>
           ${frInput}
         </div>
         <div class="field">
-          <label>${label} <span class="text-gold">🇬🇧 EN</span></label>
+          <label>${label} <span class="text-gold">EN</span></label>
           ${enInput}
         </div>
       </div>
@@ -374,10 +374,10 @@ function renderServicesForm(key, obj) {
   const itemsHTML = items.map((it, i) => serviceItemHTML(it, i)).join('');
 
   const metaFrHTML = ['tag','title'].map(k => `
-    <div class="field"><label>${FIELD_LABELS[k] || k} 🇫🇷 FR</label><input name="${k}_fr" value="${escapeHtml(obj[k + '_fr'] || '')}" /></div>
+    <div class="field"><label>${FIELD_LABELS[k] || k} FR</label><input name="${k}_fr" value="${escapeHtml(obj[k + '_fr'] || '')}" /></div>
   `).join('');
   const metaEnHTML = ['tag','title'].map(k => `
-    <div class="field"><label>${FIELD_LABELS[k] || k} 🇬🇧 EN</label><input name="${k}_en" value="${escapeHtml(obj[k + '_en'] || '')}" /></div>
+    <div class="field"><label>${FIELD_LABELS[k] || k} EN</label><input name="${k}_en" value="${escapeHtml(obj[k + '_en'] || '')}" /></div>
   `).join('');
 
   return `
@@ -406,12 +406,12 @@ function serviceItemHTML(it, i) {
       <button type="button" class="absolute top-3 right-3 text-terracotta text-xs uppercase tracking-widest remove-service">Supprimer</button>
       <div class="field mb-3"><label>Numéro</label><input class="svc-num" value="${escapeHtml(it.num || '')}" /></div>
       <div class="bilingual-row mb-3">
-        <div class="field"><label>Titre 🇫🇷 FR</label><input class="svc-title-fr" value="${escapeHtml(it.title_fr || '')}" /></div>
-        <div class="field"><label>Title 🇬🇧 EN</label><input class="svc-title-en" value="${escapeHtml(it.title_en || '')}" /></div>
+        <div class="field"><label>Titre FR</label><input class="svc-title-fr" value="${escapeHtml(it.title_fr || '')}" /></div>
+        <div class="field"><label>Title EN</label><input class="svc-title-en" value="${escapeHtml(it.title_en || '')}" /></div>
       </div>
       <div class="bilingual-row">
-        <div class="field"><label>Description 🇫🇷 FR</label><textarea class="svc-desc-fr" rows="2">${escapeHtml(it.desc_fr || '')}</textarea></div>
-        <div class="field"><label>Description 🇬🇧 EN</label><textarea class="svc-desc-en" rows="2">${escapeHtml(it.desc_en || '')}</textarea></div>
+        <div class="field"><label>Description FR</label><textarea class="svc-desc-fr" rows="2">${escapeHtml(it.desc_fr || '')}</textarea></div>
+        <div class="field"><label>Description EN</label><textarea class="svc-desc-en" rows="2">${escapeHtml(it.desc_en || '')}</textarea></div>
       </div>
     </div>
   `;
@@ -863,8 +863,8 @@ async function loadFaqAdmin() {
   list.innerHTML = allFaqAdmin.map(f => `
     <div class="border border-sand p-4 md:p-6">
       <div class="bilingual-row mb-4">
-        <div><p class="font-serif text-base md:text-lg mb-1">🇫🇷 ${escapeHtml(f.question_fr)}</p><p class="text-sm text-espresso/70">${escapeHtml(f.answer_fr)}</p></div>
-        <div><p class="font-serif text-base md:text-lg mb-1">🇬🇧 ${escapeHtml(f.question_en)}</p><p class="text-sm text-espresso/70">${escapeHtml(f.answer_en)}</p></div>
+        <div><p class="font-serif text-base md:text-lg mb-1">FR ${escapeHtml(f.question_fr)}</p><p class="text-sm text-espresso/70">${escapeHtml(f.answer_fr)}</p></div>
+        <div><p class="font-serif text-base md:text-lg mb-1">EN ${escapeHtml(f.question_en)}</p><p class="text-sm text-espresso/70">${escapeHtml(f.answer_en)}</p></div>
       </div>
       <div class="flex gap-2">
         <button onclick="editFaq('${f.id}')" class="text-xs uppercase tracking-widest text-espresso hover:underline">Modifier</button>
@@ -962,6 +962,9 @@ function renderSalonAdmin() {
   `).join('');
 }
 
+/* --- État du modal --- */
+let salonEditingId = null;
+
 function initSalonAdmin() {
   // Filtres par maison
   document.querySelectorAll('.salon-admin-filter').forEach(btn => {
@@ -975,68 +978,192 @@ function initSalonAdmin() {
 
   // Bouton Ajouter
   const addBtn = document.getElementById('addSalonBlockBtn');
-  if (addBtn) {
-    addBtn.addEventListener('click', addSalonBlock);
+  if (addBtn) addBtn.addEventListener('click', () => openSalonModal(null));
+
+  // Modal events
+  const modal = document.getElementById('salonBlockModal');
+  const closeBtn = document.getElementById('salonModalClose');
+  const cancelBtn = document.getElementById('salonModalCancel');
+  const saveBtn = document.getElementById('salonModalSave');
+  const fileInput = document.getElementById('sbMediaFile');
+  const urlInput = document.getElementById('sbMediaUrl');
+
+  const close = () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    salonEditingId = null;
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (cancelBtn) cancelBtn.addEventListener('click', close);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+  // Upload fichier
+  if (fileInput) {
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('sbUploadStatus');
+      statusEl.textContent = 'Upload en cours…';
+
+      const url = await uploadSalonFile(file);
+      if (!url) { statusEl.textContent = '❌ Erreur upload'; return; }
+
+      urlInput.value = url;
+      statusEl.textContent = '✅ Upload réussi';
+      updateSalonPreview(url);
+    });
   }
+
+  // Preview sur changement URL
+  if (urlInput) {
+    urlInput.addEventListener('input', (e) => updateSalonPreview(e.target.value));
+  }
+
+  // Save
+  if (saveBtn) saveBtn.addEventListener('click', saveSalonBlock);
 }
 
-async function addSalonBlock() {
-  const types = ['video', 'offer', 'article', 'gallery', 'text', 'tour3d'];
-  const typeChoice = prompt(
-    `Type de bloc :\n\n${types.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\nEntrez le numéro :`,
-    '1'
-  );
-  if (!typeChoice) return;
-  const typeIndex = parseInt(typeChoice, 10) - 1;
-  if (typeIndex < 0 || typeIndex >= types.length) return;
-  const selectedType = types[typeIndex];
+function openSalonModal(block) {
+  const modal = document.getElementById('salonBlockModal');
+  const titleEl = document.getElementById('salonModalTitle');
 
-  const titleFr = prompt('Titre (FR) :', '');
-  if (titleFr === null) return;
-  const titleEn = prompt('Titre (EN) :', '') || '';
-  const contentFr = prompt('Description (FR) :', '') || '';
-  const contentEn = prompt('Description (EN) :', '') || '';
-  const mediaUrl = prompt('URL du média (YouTube embed, image, etc.) :', '') || '';
-  const minTier = prompt('Tier minimum (guest / client / vip) :', 'guest') || 'guest';
+  salonEditingId = block ? block.id : null;
 
-  const { error } = await supabaseClient.from('salon_blocks').insert([{
+  titleEl.textContent = block ? 'Modifier le bloc Salon' : 'Nouveau bloc Salon';
+
+  document.getElementById('sbType').value = block?.type || 'video';
+  document.getElementById('sbMinTier').value = block?.min_tier || 'guest';
+  document.getElementById('sbTitleFr').value = block?.title_fr || '';
+  document.getElementById('sbTitleEn').value = block?.title_en || '';
+  document.getElementById('sbContentFr').value = block?.content_fr || '';
+  document.getElementById('sbContentEn').value = block?.content_en || '';
+  document.getElementById('sbMediaUrl').value = block?.media_url || '';
+  document.getElementById('sbUploadStatus').textContent = '';
+  document.getElementById('salonModalStatus').textContent = '';
+
+  updateSalonPreview(block?.media_url || '');
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+/* --- Détection du type de média --- */
+function detectSalonMediaType(url) {
+  if (!url || typeof url !== 'string') return 'none';
+  const u = url.trim();
+  if (/youtube\.com\/watch\?v=/.test(u) || /youtu\.be\//.test(u) || /youtube\.com\/embed\//.test(u)) return 'youtube';
+  if (/vimeo\.com\//.test(u)) return 'vimeo';
+  if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(u)) return 'video';
+  if (/\.(jpg|jpeg|png|webp|gif|avif)(\?.*)?$/i.test(u)) return 'image';
+  if (/^https:\/\//i.test(u)) return 'link';
+  return 'none';
+}
+
+function extractYouTubeId(url) {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+  return m ? m[1] : null;
+}
+
+function extractVimeoId(url) {
+  const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  return m ? m[1] : null;
+}
+
+function updateSalonPreview(url) {
+  const preview = document.getElementById('sbPreview');
+  if (!preview) return;
+
+  const type = detectSalonMediaType(url);
+
+  if (type === 'none') {
+    preview.classList.add('hidden');
+    preview.innerHTML = '';
+    return;
+  }
+
+  let html = '';
+
+  if (type === 'youtube') {
+    const id = extractYouTubeId(url);
+    if (id) html = `<iframe src="https://www.youtube.com/embed/${id}" class="w-full aspect-video" frameborder="0" allowfullscreen></iframe>`;
+  } else if (type === 'vimeo') {
+    const id = extractVimeoId(url);
+    if (id) html = `<iframe src="https://player.vimeo.com/video/${id}?color=B8895A&title=0&byline=0" class="w-full aspect-video" frameborder="0" allowfullscreen></iframe>`;
+  } else if (type === 'video') {
+    html = `<video src="${url}" controls class="w-full aspect-video bg-espresso"></video>`;
+  } else if (type === 'image') {
+    html = `<img src="${url}" class="w-full max-h-64 object-cover border border-sand" />`;
+  } else if (type === 'link') {
+    html = `<div class="p-4 border border-sand bg-sand/30 text-center">
+      <p class="text-xs uppercase tracking-widest text-espresso/60 mb-2">Lien externe</p>
+      <a href="${url}" target="_blank" class="text-gold hover:underline text-sm break-all">${url}</a>
+    </div>`;
+  }
+
+  preview.innerHTML = html;
+  preview.classList.remove('hidden');
+}
+
+/* --- Upload vers Supabase Storage (bucket: salon-videos) --- */
+async function uploadSalonFile(file) {
+  const ext = file.name.split('.').pop();
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabaseClient.storage
+    .from('salon-videos')
+    .upload(name, file, { cacheControl: '3600', upsert: false });
+
+  if (error) { console.error('upload error:', error); return null; }
+
+  const { data } = supabaseClient.storage.from('salon-videos').getPublicUrl(name);
+  return data.publicUrl;
+}
+
+/* --- Sauvegarde du bloc --- */
+async function saveSalonBlock() {
+  const status = document.getElementById('salonModalStatus');
+  status.textContent = 'Enregistrement…';
+
+  const payload = {
     brand: salonAdminBrand,
-    type: selectedType,
-    title_fr: titleFr,
-    title_en: titleEn,
-    content_fr: contentFr,
-    content_en: contentEn,
-    media_url: mediaUrl,
-    min_tier: minTier,
-    status: 'visible',
-    sort_order: allSalonBlocks.length + 1
-  }]);
+    type: document.getElementById('sbType').value,
+    title_fr: document.getElementById('sbTitleFr').value.trim(),
+    title_en: document.getElementById('sbTitleEn').value.trim(),
+    content_fr: document.getElementById('sbContentFr').value.trim(),
+    content_en: document.getElementById('sbContentEn').value.trim(),
+    media_url: document.getElementById('sbMediaUrl').value.trim(),
+    min_tier: document.getElementById('sbMinTier').value,
+  };
 
-  if (error) { alert('Erreur : ' + error.message); return; }
-  loadSalonAdmin();
+  let error;
+  if (salonEditingId) {
+    ({ error } = await supabaseClient.from('salon_blocks').update(payload).eq('id', salonEditingId));
+  } else {
+    payload.status = 'visible';
+    payload.sort_order = allSalonBlocks.length + 1;
+    ({ error } = await supabaseClient.from('salon_blocks').insert([payload]));
+  }
+
+  if (error) {
+    status.textContent = '❌ ' + error.message;
+    return;
+  }
+
+  status.textContent = '✅ Enregistré';
+  setTimeout(() => {
+    document.getElementById('salonBlockModal').classList.add('hidden');
+    document.getElementById('salonBlockModal').classList.remove('flex');
+    salonEditingId = null;
+    loadSalonAdmin();
+  }, 800);
 }
 
 async function editSalonBlock(id) {
   const block = allSalonBlocks.find(b => b.id === id);
   if (!block) return;
-
-  const titleFr = prompt('Titre (FR) :', block.title_fr || '');
-  if (titleFr === null) return;
-  const titleEn = prompt('Titre (EN) :', block.title_en || '') || '';
-  const contentFr = prompt('Description (FR) :', block.content_fr || '') || '';
-  const contentEn = prompt('Description (EN) :', block.content_en || '') || '';
-  const mediaUrl = prompt('URL du média :', block.media_url || '') || '';
-  const minTier = prompt('Tier minimum (guest / client / vip) :', block.min_tier || 'guest') || 'guest';
-
-  await supabaseClient.from('salon_blocks').update({
-    title_fr: titleFr,
-    title_en: titleEn,
-    content_fr: contentFr,
-    content_en: contentEn,
-    media_url: mediaUrl,
-    min_tier: minTier
-  }).eq('id', id);
-  loadSalonAdmin();
+  openSalonModal(block);
 }
 
 async function toggleSalonBlockStatus(id, currentStatus) {
@@ -1060,6 +1187,7 @@ function escapeHtml(str) {
   div.textContent = String(str);
   return div.innerHTML;
 }
+
 /* ============================
    NEWSLETTER
    ============================ */
