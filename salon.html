@@ -71,7 +71,9 @@
 
     <!-- BLOCS DYNAMIQUES -->
     <section class="salon-blocks">
-      <div id="salonBlocks"></div>
+      <div id="salonBlocks">
+        <p class="text-center font-serif italic text-espresso/60 py-16">Chargement…</p>
+      </div>
     </section>
 
   </main>
@@ -82,7 +84,7 @@
     <p class="salon-footer-text">Le Salon Privé — Un espace réservé à nos clients</p>
   </footer>
 
-  <!-- SCRIPTS -->
+  <!-- SCRIPTS — ordre important : config → salon → access → init -->
   <script src="js/supabase-config.js"></script>
   <script src="js/salon.js"></script>
   <script src="js/salon-access.js"></script>
