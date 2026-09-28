@@ -1,7 +1,7 @@
 /* ============================================
    NEWSLETTER — Inscription + validation
    Beauty by Asty
-   Version corrigée : utilise RPC Supabase
+   Version corrigée : couleurs adaptées au footer sombre
    ============================================ */
 
 const NEWSLETTER_CONFIG = {
@@ -141,16 +141,35 @@ function initNewsletterForms() {
   });
 }
 
+/* ============================================
+   AFFICHAGE DU MESSAGE DE STATUT
+   Couleurs adaptées au footer sombre (bg-espresso)
+   ============================================ */
 function showNewsletterStatus(el, type, message) {
   if (!el) {
     console.warn('[newsletter] pas de .newsletter-status trouvé');
     return;
   }
+
   el.textContent = message;
-  el.classList.remove('hidden', 'text-gold', 'text-terracotta', 'text-espresso/60');
-  if (type === 'success')      el.classList.add('text-gold');
-  else if (type === 'error')   el.classList.add('text-terracotta');
-  else                         el.classList.add('text-espresso/60');
+
+  // Nettoie toutes les classes de couleur possibles avant d'ajouter la bonne
+  el.classList.remove(
+    'hidden',
+    'text-gold',
+    'text-terracotta',
+    'text-espresso/60',
+    'text-alabaster/70'
+  );
+
+  // Couleurs adaptées au fond sombre du footer
+  if (type === 'success') {
+    el.classList.add('text-gold');           // Doré (visible sur fond noir)
+  } else if (type === 'error') {
+    el.classList.add('text-terracotta');     // Terracotta (visible)
+  } else {
+    el.classList.add('text-alabaster/70');   // Blanc cassé (visible sur fond noir)
+  }
 
   clearTimeout(el._nlTimeout);
   el._nlTimeout = setTimeout(() => el.classList.add('hidden'), NEWSLETTER_CONFIG.statusDelay);
