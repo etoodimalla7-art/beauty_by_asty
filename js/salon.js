@@ -3,15 +3,23 @@
    Beauty by Asty — Multi-plateforme
    ============================================ */
 
-let salonState = {
+/* --- État global du salon (exposé dans window) --- */
+window.salonState = window.salonState || {
   brand: 'group',
   blocks: [],
   tier: 'guest',
   client: null
 };
 
+const salonState = window.salonState;
+
 /* ---- Charge les blocs depuis Supabase ---- */
 async function loadSalonBlocks(brand) {
+  if (typeof supabaseClient === 'undefined') {
+    console.error('[salon] supabaseClient introuvable');
+    return [];
+  }
+
   const { data, error } = await supabaseClient
     .from('salon_blocks')
     .select('*')
@@ -20,7 +28,7 @@ async function loadSalonBlocks(brand) {
     .order('sort_order', { ascending: true });
 
   if (error) {
-    console.error('loadSalonBlocks', error);
+    console.error('[salon] loadSalonBlocks error:', error);
     return [];
   }
   return data || [];
@@ -53,7 +61,7 @@ function extractDomain(url) {
   catch (_) { return 'lien'; }
 }
 
-/* ---- Vérifie si l'utilisateur a accès ---- */
+/* ---- Vérifie si l'utilisateur a accès au bloc ---- */
 function hasAccessToBlock(block, userTier) {
   const order = { guest: 0, client: 1, vip: 2 };
   const blockTier = order[block.min_tier] ?? 0;
@@ -64,9 +72,14 @@ function hasAccessToBlock(block, userTier) {
 /* ---- Rendu principal ---- */
 function renderSalonBlocks(blocks) {
   const container = document.getElementById('salonBlocks');
-  if (!container) return;
+  if (!container) {
+    console.warn('[salon] #salonBlocks introuvable');
+    return;
+  }
 
-  if (!blocks || blocks.length === 0) {
+  if (!Array.isArray(blocks)) blocks = [];
+
+  if (blocks.length === 0) {
     container.innerHTML = `
       <div class="text-center py-20">
         <p class="font-serif italic text-xl text-espresso/60">
@@ -77,10 +90,12 @@ function renderSalonBlocks(blocks) {
     return;
   }
 
+  const tier = (window.salonState && window.salonState.tier) || 'guest';
+
   container.innerHTML = blocks
     .filter(b => b.status === 'visible')
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-    .map(block => renderBlock(block))
+    .map(block => renderBlock(block, tier))
     .join('');
 
   // Écouteurs pour les CTA
@@ -93,15 +108,14 @@ function renderSalonBlocks(blocks) {
 }
 
 /* ---- Rendu d'un bloc ---- */
-function renderBlock(block) {
+function renderBlock(block, tier) {
   const isFR = (window.currentLang || 'fr') === 'fr';
   const title = isFR ? block.title_fr : block.title_en;
   const content = isFR ? block.content_fr : block.content_en;
   const cta = isFR ? block.cta_fr : block.cta_en;
 
-  const isLocked = !hasAccessToBlock(block, salonState.tier);
+  const isLocked = !hasAccessToBlock(block, tier);
 
-  // Si verrouillé → overlay doré
   if (isLocked) {
     return `
       <section class="salon-block salon-block-locked reveal relative">
@@ -125,23 +139,16 @@ function renderBlock(block) {
   }
 
   switch (block.type) {
-    case 'video':
-      return renderVideoBlock(block, title, content);
-    case 'offer':
-      return renderOfferBlock(block, title, content, cta, isFR);
-    case 'article':
-      return renderArticleBlock(block, title, content);
-    case 'gallery':
-      return renderGalleryBlock(block, title, content);
-    case 'tour3d':
-      return renderTourBlock(block, title, content);
+    case 'video':    return renderVideoBlock(block, title, content);
+    case 'offer':    return renderOfferBlock(block, title, content, cta, isFR);
+    case 'article':  return renderArticleBlock(block, title, content);
+    case 'gallery':  return renderGalleryBlock(block, title, content);
+    case 'tour3d':   return renderTourBlock(block, title, content);
     case 'text':
-    default:
-      return renderTextBlock(block, title, content, cta);
+    default:         return renderTextBlock(block, title, content, cta);
   }
 }
 
-/* ---- Bloc vidéo multi-plateforme ---- */
 function renderVideoBlock(block, title, content) {
   const url = block.media_url || '';
   const type = detectMediaType(url);
@@ -208,7 +215,6 @@ function renderVideoBlock(block, title, content) {
   `;
 }
 
-/* ---- Bloc offre ---- */
 function renderOfferBlock(block, title, content, cta, isFR) {
   const expires = block.expires_at
     ? new Date(block.expires_at).toLocaleDateString(isFR ? 'fr-FR' : 'en-US', {
@@ -227,7 +233,6 @@ function renderOfferBlock(block, title, content, cta, isFR) {
   `;
 }
 
-/* ---- Bloc article ---- */
 function renderArticleBlock(block, title, content) {
   const url = block.media_url || '';
   const type = detectMediaType(url);
@@ -248,7 +253,6 @@ function renderArticleBlock(block, title, content) {
   `;
 }
 
-/* ---- Bloc galerie ---- */
 function renderGalleryBlock(block, title, content) {
   const images = Array.isArray(block.images) ? block.images
     : (block.media_url ? block.media_url.split(',').map(s => s.trim()).filter(Boolean) : []);
@@ -268,10 +272,9 @@ function renderGalleryBlock(block, title, content) {
   `;
 }
 
-/* ---- Bloc visite 3D ---- */
 function renderTourBlock(block, title, content) {
   const url = block.media_url || '';
-  const isEmbeddable = url && (url.includes('matterport') || url.includes('sketchfab') || url.includes('my.matterport'));
+  const isEmbeddable = url && (url.includes('matterport') || url.includes('sketchfab'));
 
   return `
     <section class="salon-block salon-block-tour reveal">
@@ -293,7 +296,6 @@ function renderTourBlock(block, title, content) {
   `;
 }
 
-/* ---- Bloc texte ---- */
 function renderTextBlock(block, title, content, cta) {
   return `
     <section class="salon-block salon-block-text reveal">
@@ -304,7 +306,6 @@ function renderTextBlock(block, title, content, cta) {
   `;
 }
 
-/* ---- Helpers ---- */
 function escapeHtml(str) {
   if (str == null) return '';
   const div = document.createElement('div');
