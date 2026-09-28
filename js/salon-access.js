@@ -1,5 +1,6 @@
 /* ============================================
    SALON ACCESS — Vérification + Freemium
+   Beauty by Asty — v2 (fix tiers + cache)
    ============================================ */
 
 const SALON_ACCESS = {
@@ -18,28 +19,34 @@ async function checkSalonAccess() {
     try {
       const data = JSON.parse(stored);
       if (data.phone) {
-        // Vérifie que ce téléphone a bien réservé
-        const { data: bookings } = await supabaseClient
+        const cleanPhone = data.phone.replace(/\D/g, '');
+        const { data: bookings, error } = await supabaseClient
           .from('bookings')
           .select('id')
-          .or(`phone.ilike.%${data.phone.replace(/\D/g, '')}%`)
+          .ilike('phone', `%${cleanPhone}%`)
           .limit(1);
 
-        if (bookings && bookings.length > 0) {
+        if (!error && bookings && bookings.length > 0) {
           SALON_ACCESS.currentTier = 'client';
-          salonState.tier = 'client';
-          salonState.client = data;
+          if (window.salonState) {
+            window.salonState.tier = 'client';
+            window.salonState.client = data;
+          }
+          console.log('[salon-access] Tier : client');
           return true;
         }
       }
     } catch (e) {
-      console.error('Erreur accès salon', e);
+      console.error('[salon-access] Erreur:', e);
     }
   }
 
   // 2. Sinon → guest
   SALON_ACCESS.currentTier = 'guest';
-  salonState.tier = 'guest';
+  if (window.salonState) {
+    window.salonState.tier = 'guest';
+  }
+  console.log('[salon-access] Tier : guest');
   return false;
 }
 
@@ -53,13 +60,12 @@ function renderAccessBanner() {
   const isFR = (window.currentLang || 'fr') === 'fr';
 
   if (SALON_ACCESS.currentTier === 'client') {
-    // Client connecté → bannière discrète
     banner.innerHTML = `
       <div class="salon-access-banner salon-access-banner-client">
         <p>
           ${isFR
-            ? `✨ Bienvenue dans votre Salon Privé, <strong>${escapeHtml(salonState.client?.name || 'chère cliente')}</strong>`
-            : `✨ Welcome to your Private Salon, <strong>${escapeHtml(salonState.client?.name || 'dear client')}</strong>`}
+            ? `Bienvenue dans votre Salon Privé, <strong>${escapeHtml(window.salonState?.client?.name || 'chère cliente')}</strong>`
+            : `Welcome to your Private Salon, <strong>${escapeHtml(window.salonState?.client?.name || 'dear client')}</strong>`}
         </p>
         <button id="salonLogoutBtn" class="salon-logout-btn">
           ${isFR ? 'Se déconnecter' : 'Log out'}
@@ -67,17 +73,19 @@ function renderAccessBanner() {
       </div>
     `;
 
-    document.getElementById('salonLogoutBtn').addEventListener('click', () => {
-      localStorage.removeItem(SALON_ACCESS.storageKey);
-      location.reload();
-    });
+    const logoutBtn = document.getElementById('salonLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem(SALON_ACCESS.storageKey);
+        location.reload();
+      });
+    }
   } else {
-    // Guest → bannière invitation
     banner.innerHTML = `
       <div class="salon-access-banner salon-access-banner-guest">
         <div>
           <p class="salon-access-title">
-            ${isFR ? 'Vous consultez l\'aperçu public' : 'You are viewing the public preview'}
+            ${isFR ? "Vous consultez l'aperçu public" : 'You are viewing the public preview'}
           </p>
           <p class="salon-access-subtitle">
             ${isFR
@@ -99,8 +107,10 @@ function renderAccessBanner() {
 function renderAccessLoginForm() {
   const wrapper = document.getElementById('salonLoginForm');
   if (!wrapper) return;
+
   if (SALON_ACCESS.currentTier === 'client') {
     wrapper.classList.add('hidden');
+    wrapper.innerHTML = '';
     return;
   }
 
@@ -131,29 +141,34 @@ function renderAccessLoginForm() {
     </div>
   `;
 
-  document.getElementById('salonLoginFormInner').addEventListener('submit', async (e) => {
+  const form = document.getElementById('salonLoginFormInner');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const phone = document.getElementById('salonPhone').value.trim();
     const errorEl = document.getElementById('salonLoginError');
 
-    if (!phone || phone.replace(/\D/g, '').length < 8) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 8) {
       errorEl.textContent = isFR ? 'Numéro invalide.' : 'Invalid phone.';
       errorEl.classList.remove('hidden');
       return;
     }
 
-    const cleanPhone = phone.replace(/\D/g, '');
+    errorEl.textContent = isFR ? 'Vérification…' : 'Checking…';
+    errorEl.classList.remove('hidden');
 
-    const { data: bookings } = await supabaseClient
+    const { data: bookings, error } = await supabaseClient
       .from('bookings')
       .select('*')
-      .or(`phone.ilike.%${cleanPhone}%`)
+      .ilike('phone', `%${cleanPhone}%`)
       .limit(1);
 
-    if (!bookings || bookings.length === 0) {
+    if (error || !bookings || bookings.length === 0) {
       errorEl.textContent = isFR
-        ? 'Aucune réservation trouvée. Réservez d\'abord une séance.'
-        : 'No booking found. Book a session first.';
+        ? "Aucune réservation trouvée avec ce numéro. Réservez d'abord une séance."
+        : 'No booking found with this number. Book a session first.';
       errorEl.classList.remove('hidden');
       return;
     }
@@ -180,11 +195,13 @@ function escapeHtml(str) {
 }
 
 /* ============================================
-   INIT
+   AUTO-INIT (fallback si salon-init.js échoue)
    ============================================ */
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof supabaseClient === 'undefined') return;
-  await checkSalonAccess();
-  renderAccessBanner();
-  renderAccessLoginForm();
+  // Note : normalement c'est salon-init.js qui appelle ces fonctions
+  // Ce bloc est un filet de sécurité
+  if (typeof window.__salonAccessInit === 'undefined') {
+    window.__salonAccessInit = true;
+  }
 });
