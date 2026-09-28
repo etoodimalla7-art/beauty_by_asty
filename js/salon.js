@@ -1,6 +1,6 @@
 /* ============================================
    SALON PRIVÉ — Chargement + affichage
-   Beauty by Asty — Multi-plateforme
+   Beauty by Asty — Multi-plateforme v3
    ============================================ */
 
 /* --- État global du salon (exposé dans window) --- */
@@ -118,7 +118,7 @@ function renderBlock(block, tier) {
 
   if (isLocked) {
     return `
-      <section class="salon-block salon-block-locked reveal relative">
+      <section class="salon-block salon-block-locked relative">
         <div class="relative overflow-hidden">
           <div class="aspect-video bg-espresso/90 flex flex-col items-center justify-center text-alabaster backdrop-blur-md">
             <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#B8895A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="mb-4">
@@ -207,7 +207,7 @@ function renderVideoBlock(block, title, content) {
   }
 
   return `
-    <section class="salon-block salon-block-video reveal">
+    <section class="salon-block salon-block-video">
       ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
       ${content ? `<p class="salon-block-text">${escapeHtml(content)}</p>` : ''}
       ${mediaHTML}
@@ -223,7 +223,7 @@ function renderOfferBlock(block, title, content, cta, isFR) {
     : null;
 
   return `
-    <section class="salon-block salon-block-offer reveal">
+    <section class="salon-block salon-block-offer">
       <div class="salon-offer-badge">${isFR ? 'Offre privée' : 'Private offer'}</div>
       ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
       ${content ? `<p class="salon-block-text">${escapeHtml(content)}</p>` : ''}
@@ -243,7 +243,7 @@ function renderArticleBlock(block, title, content) {
   }
 
   return `
-    <section class="salon-block salon-block-article reveal">
+    <section class="salon-block salon-block-article">
       ${imgHTML}
       <div class="salon-article-body">
         ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
@@ -258,7 +258,7 @@ function renderGalleryBlock(block, title, content) {
     : (block.media_url ? block.media_url.split(',').map(s => s.trim()).filter(Boolean) : []);
 
   return `
-    <section class="salon-block salon-block-gallery reveal">
+    <section class="salon-block salon-block-gallery">
       ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
       ${content ? `<p class="salon-block-text">${escapeHtml(content)}</p>` : ''}
       <div class="salon-gallery-grid">
@@ -277,7 +277,7 @@ function renderTourBlock(block, title, content) {
   const isEmbeddable = url && (url.includes('matterport') || url.includes('sketchfab'));
 
   return `
-    <section class="salon-block salon-block-tour reveal">
+    <section class="salon-block salon-block-tour">
       ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
       ${content ? `<p class="salon-block-text">${escapeHtml(content)}</p>` : ''}
       <div class="salon-tour-wrapper">
@@ -298,7 +298,7 @@ function renderTourBlock(block, title, content) {
 
 function renderTextBlock(block, title, content, cta) {
   return `
-    <section class="salon-block salon-block-text reveal">
+    <section class="salon-block salon-block-text">
       ${title ? `<h3 class="salon-block-title">${escapeHtml(title)}</h3>` : ''}
       ${content ? `<p class="salon-block-text">${escapeHtml(content)}</p>` : ''}
       ${cta ? `<button class="salon-cta" data-url="${block.cta_url || ''}">${escapeHtml(cta)}</button>` : ''}
