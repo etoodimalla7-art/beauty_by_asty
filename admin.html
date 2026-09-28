@@ -73,7 +73,6 @@
         </div>
       </div>
 
-      <!-- Brand selector -->
       <nav class="max-w-[1500px] mx-auto px-4 md:px-6 pt-2 flex gap-1 border-t border-sand overflow-x-auto">
         <button class="brand-tab active whitespace-nowrap" data-brand-select="group">Groupe</button>
         <button class="brand-tab whitespace-nowrap" data-brand-select="beauty">Beauty</button>
@@ -81,7 +80,6 @@
         <button class="brand-tab whitespace-nowrap" data-brand-select="studio">Studio</button>
       </nav>
 
-      <!-- Section tabs -->
       <nav class="max-w-[1500px] mx-auto px-4 md:px-6 flex gap-1 border-t border-sand overflow-x-auto">
         <button class="admin-tab active whitespace-nowrap" data-tab="content">Contenu</button>
         <button class="admin-tab whitespace-nowrap" data-tab="gallery">Galerie</button>
@@ -254,6 +252,95 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- ============ SALON BLOCK MODAL ============ -->
+  <div id="salonBlockModal" class="fixed inset-0 z-[110] bg-espresso/70 hidden items-start justify-center px-5 py-8 overflow-y-auto">
+    <div class="bg-alabaster max-w-2xl w-full p-6 md:p-8 relative my-8">
+      <button id="salonModalClose" class="absolute top-3 right-3 text-espresso/60 hover:text-espresso" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+
+      <h2 id="salonModalTitle" class="font-serif text-2xl md:text-3xl mb-2">Nouveau bloc Salon</h2>
+      <p class="text-xs uppercase tracking-widest text-gold mb-8">Salon Privé</p>
+
+      <div class="space-y-5">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="field">
+            <label for="sbType">Type de bloc</label>
+            <select id="sbType">
+              <option value="video">Vidéo</option>
+              <option value="article">Article</option>
+              <option value="offer">Offre</option>
+              <option value="gallery">Galerie</option>
+              <option value="text">Texte</option>
+              <option value="tour3d">Visite 3D</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sbMinTier">Niveau d'accès</label>
+            <select id="sbMinTier">
+              <option value="guest">Public (visible par tous)</option>
+              <option value="client">Client (après réservation)</option>
+              <option value="vip">VIP</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="field">
+            <label for="sbTitleFr">Titre (FR)</label>
+            <input id="sbTitleFr" type="text" />
+          </div>
+          <div class="field">
+            <label for="sbTitleEn">Titre (EN)</label>
+            <input id="sbTitleEn" type="text" />
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="field">
+            <label for="sbContentFr">Description (FR)</label>
+            <textarea id="sbContentFr" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <label for="sbContentEn">Description (EN)</label>
+            <textarea id="sbContentEn" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="border border-sand p-4">
+          <label class="text-xs uppercase tracking-widest text-espresso/60 mb-3 block">Média</label>
+
+          <div class="field mb-3">
+            <label for="sbMediaUrl" class="text-xs">URL du média (YouTube, Vimeo, mp4, image, ou tout lien https)</label>
+            <input id="sbMediaUrl" type="text" placeholder="https://..." />
+          </div>
+
+          <div class="flex items-center gap-3 mb-3">
+            <label class="cursor-pointer border border-espresso px-3 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+              Choisir un fichier
+              <input type="file" id="sbMediaFile" class="hidden" accept="video/*,image/*" />
+            </label>
+            <span id="sbUploadStatus" class="text-xs text-gold"></span>
+          </div>
+
+          <div id="sbPreview" class="mt-3 hidden">
+            <!-- Preview injectée par JS -->
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-sand">
+          <button id="salonModalCancel" type="button" class="border border-espresso px-5 py-2 text-xs uppercase tracking-widest hover:bg-espresso hover:text-alabaster transition">
+            Annuler
+          </button>
+          <button id="salonModalSave" type="button" class="bg-espresso text-alabaster px-5 py-2 text-xs uppercase tracking-widest hover:bg-gold transition">
+            Enregistrer
+          </button>
+        </div>
+        <p id="salonModalStatus" class="text-sm text-gold text-center"></p>
+      </div>
+    </div>
   </div>
 
   <!-- ============ ACCOUNT MODAL ============ -->
