@@ -1,29 +1,67 @@
 /* ============================================
-   DYNAMIC CONTENT — chargé depuis Supabase
+   DYNAMIC CONTENT — Beauty by Asty
+   Version FINALE (auto-init + brand detection + footer fix)
    ============================================ */
+
+/* ---- Détection du brand (multi-source) ---- */
+function detectBrand() {
+  // 1. window.BRAND (défini dans le HTML)
+  if (typeof window.BRAND === 'string' && window.BRAND) return window.BRAND;
+  // 2. data-brand sur <body>
+  const fromBody = document.body?.dataset?.brand;
+  if (fromBody) return fromBody;
+  // 3. Fallback
+  return 'beauty';
+}
+
+const BRAND_DETECTED = detectBrand();
+console.log('[content] Brand détecté :', BRAND_DETECTED);
+
+/* ---- Store global ---- */
 window.content = {
   hero: {}, about: {}, services: { items: [] }, contact: {}, socials: {}, footer: {}
 };
 
+/* ---- Chargement depuis Supabase ---- */
 async function loadContent() {
+  if (typeof supabaseClient === 'undefined') {
+    console.error('[content] supabaseClient introuvable');
+    return;
+  }
+
   const { data, error } = await supabaseClient
     .from('content')
     .select('*')
- .eq('brand', window.BRAND || 'beauty');
-   
-  if (error) { console.error('loadContent', error); return; }
+    .eq('brand', BRAND_DETECTED);
+
+  if (error) { console.error('[content] loadContent error:', error); return; }
+
   (data || []).forEach(row => {
     window.content[row.key] = row.value;
   });
+
+  // Alias pour le brand 'group' (qui utilise des clés préfixées)
+  if (BRAND_DETECTED === 'group') {
+    if (window.content.group_hero)    window.content.hero    = window.content.group_hero;
+    if (window.content.group_about)   window.content.about   = window.content.group_about;
+    if (window.content.group_founder) window.content.founder = window.content.group_founder;
+    if (window.content.group_contact) window.content.contact = window.content.group_contact;
+    if (window.content.group_footer)  window.content.footer  = window.content.group_footer;
+    if (window.content.group_brands)  window.content.brands  = window.content.group_brands;
+  }
+
+  console.log('[content] Données chargées :', Object.keys(window.content));
+  console.log('[content] Footer brut :', window.content.footer);
 }
 
-/* Petite aide pour sélectionner la bonne langue */
+/* ---- Helper bilingue ---- */
 function pick(obj, key) {
   if (!obj) return '';
-  return obj[`${key}_${currentLang}`] || obj[`${key}_fr`] || '';
+  const lang = (typeof currentLang === 'string' && currentLang) ? currentLang : 'fr';
+  return obj[`${key}_${lang}`] ?? obj[`${key}_fr`] ?? obj[key] ?? '';
 }
 
-/* Applique tout le contenu au DOM */
+/* ---- Rendu complet ---- */
 function renderAllContent() {
   const c = window.content;
 
@@ -31,7 +69,7 @@ function renderAllContent() {
   if (c.hero) {
     const img = document.getElementById('heroBg');
     if (img && c.hero.bg_url) img.src = c.hero.bg_url;
-    setText('heroLocation', c.hero.location_label);
+    setText('heroLocation', pick(c.hero, 'location_label'));
     setText('heroTitle', pick(c.hero, 'title'));
     setText('heroSubtitle', pick(c.hero, 'subtitle'));
     setText('heroCta1', pick(c.hero, 'cta1'));
@@ -75,8 +113,11 @@ function renderAllContent() {
     setText('contactPhone', c.contact.phone);
     setText('contactEmail', c.contact.email);
     setText('contactHours', c.contact.hours);
+
     const phoneLink = document.getElementById('contactPhoneLink');
-    if (phoneLink) phoneLink.href = `tel:${(c.contact.phone || '').replace(/\s/g,'')}`;
+    if (phoneLink && c.contact.phone) {
+      phoneLink.href = `tel:${String(c.contact.phone).replace(/\s/g,'')}`;
+    }
     const map = document.getElementById('contactMap');
     if (map && c.contact.map_embed) map.src = c.contact.map_embed;
   }
@@ -95,10 +136,47 @@ function renderAllContent() {
   if (c.footer) {
     setText('footerTagline', pick(c.footer, 'tagline'));
     setText('footerMade', pick(c.footer, 'made'));
+
+    // ✅ AJOUT CRITIQUE : adresse / tél / email du footer
+    setText('footerAddress', c.footer.address || (c.contact && c.contact.address) || '');
+    setText('footerPhone',   c.footer.phone   || (c.contact && c.contact.phone)   || '');
+    setText('footerEmail',   c.footer.email   || (c.contact && c.contact.email)   || '');
+
+    // Liens cliquables
+    const fp = document.getElementById('footerPhone');
+    if (fp && fp.tagName === 'A') {
+      const rawPhone = c.footer.phone || c.contact?.phone;
+      if (rawPhone) fp.href = `tel:${String(rawPhone).replace(/\s/g,'')}`;
+    }
+    const fe = document.getElementById('footerEmail');
+    if (fe && fe.tagName === 'A') {
+      const rawEmail = c.footer.email || c.contact?.email;
+      if (rawEmail) fe.href = `mailto:${rawEmail}`;
+    }
   }
+
+  console.log('[content] Rendu terminé');
 }
 
+/* ---- Utilitaire ---- */
 function setText(id, value) {
   const el = document.getElementById(id);
-  if (el && value != null) el.textContent = value;
+  if (el && value != null && value !== '') el.textContent = value;
 }
+
+/* ============================================
+   AUTO-INIT
+   ============================================ */
+(async function initContent() {
+  if (document.readyState === 'loading') {
+    await new Promise(r => document.addEventListener('DOMContentLoaded', r, { once: true }));
+  }
+  try {
+    await loadContent();
+    renderAllContent();
+    window.__renderContent = renderAllContent;
+    console.log('[content] ✅ Prêt');
+  } catch (err) {
+    console.error('[content] ❌ Erreur:', err);
+  }
+})();
